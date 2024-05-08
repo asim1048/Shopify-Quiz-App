@@ -50,33 +50,34 @@ const Index = () => {
         return true;
       }
 
-      // Check if the question type is SingleSelect or MultiSelect and if an image is added
-      if ((question.type == "SingleSelect" || question.type == "MultiSelect") && !question.image) {
-
-        alert(`Please add an image for question ${index + 1}.`);
-        return true;
+      // Check if the question type is SingleSelect or MultiSelect
+      if (question.type === "SingleSelect" || question.type === "MultiSelect") {
+        // Check if an image is added for each option
+        const missingImage = question.options.some(option => !option.image);
+        if (missingImage) {
+          alert(`Please add an image for all options in question ${index + 1}.`);
+          return true;
+        }
       }
 
       return false;
     });
 
-
     // Check if every option within each question has a value with length greater than 1
     const invalidOption = questions.find((question, questionIndex) => {
-      if (question.type != "SimpleInputFields") {
+      if (question.type !== "SimpleInputFields") {
         const invalidOptionIndex = question.options?.findIndex((option) => option.value.length < 2);
         if (invalidOptionIndex !== -1) {
           alert(`Please provide a valid value for option ${invalidOptionIndex + 1} in question ${questionIndex + 1}.`);
           return true;
         }
-        return false;
       }
+      return false;
     });
 
     if (invalidQuestion || invalidOption) {
       return; // Stop further actions if any validation fails
     }
-
     try {
       const formData = new FormData();
 
@@ -88,20 +89,18 @@ const Index = () => {
       questions.forEach((question, index) => {
         formData.append(`questions[${index}][title]`, question.title);
         formData.append(`questions[${index}][type]`, question.type);
+
+        // Append options along with their images
         question?.options?.forEach((option, optionIndex) => {
-          formData.append(`questions[${index}][options][${optionIndex}]`, option.value);
+          formData.append(`questions[${index}][options][${optionIndex}][value]`, option.value);
+          // Check if the option has an image and add it to the images array
+          if (option.image) {
+            formData.append('images', option.image);
+          }
         });
-        if (question.image) {
-          formData.append(`images`, question.image); // Append image(s) with the field name 'images'
-        }
-        if (question.image) {
 
-          formData.append(`questions[${index}][hasImage]`, true);
-        }
-        else {
-          formData.append(`questions[${index}][hasImage]`, false);
-
-        }
+        // Append a flag to indicate if the question has an image
+        formData.append(`questions[${index}][hasImage]`, !!question.image); // Convert to boolean
       });
 
       const request = await fetch("/api/quiz/addQuizz", {
@@ -112,10 +111,10 @@ const Index = () => {
 
       const response = await request.json();
       //console.log(response);
-      if(response.status){
+      if (response.status) {
         navigate("/");
       }
-      else{
+      else {
         alert(response?.message)
       }
     } catch (error) {
@@ -134,7 +133,6 @@ const Index = () => {
         {
           type: question.shortForm,
           title: "",
-          image: null,
           options: [{ id: Date.now(), value: "" }], // Add an empty option
         },
       ]);
@@ -147,7 +145,6 @@ const Index = () => {
         {
           type: question.shortForm,
           title: "",
-          image: null,
           options: [{ id: Date.now(), value: "" }], // Add an empty option
         },
       ]);

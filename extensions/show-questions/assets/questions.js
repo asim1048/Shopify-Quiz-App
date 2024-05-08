@@ -84,18 +84,27 @@ function displayQuestion(question) {
             if (question.type === 'MultiSelect') {
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
-                checkbox.value = option;
+                checkbox.value = option.value; // Assuming option is an object with 'value' and 'image' properties
                 optionItem.appendChild(checkbox);
             } else {
                 const radio = document.createElement('input');
                 radio.type = 'radio';
                 radio.name = 'option'; // Ensure all radio buttons have the same name
-                radio.value = option;
+                radio.value = option.value; // Assuming option is an object with 'value' and 'image' properties
                 optionItem.appendChild(radio);
             }
             const label = document.createElement('label');
-            label.textContent = option;
+            label.textContent = option.value; // Assuming option is an object with 'value' and 'image' properties
             optionItem.appendChild(label);
+
+            // Add image for option if available
+            if (option.image) {
+                const imageElement = document.createElement('img');
+                imageElement.src = `http://localhost:${port}/${option.image}`; // Assuming 'port' variable holds the port number
+                imageElement.alt = option.value; // Use option value as alt text
+                optionItem.appendChild(imageElement);
+            }
+
             questionElement.appendChild(optionItem);
         });
     } else if (question.type === 'radioButton') { // Adjusted condition for radioButton
@@ -104,7 +113,7 @@ function displayQuestion(question) {
             const radio = document.createElement('input');
             radio.type = 'radio';
             radio.name = 'option'; // Ensure all radio buttons have the same name
-            radio.value = option;
+            radio.value = option.value;
             optionItem.appendChild(radio);
             const label = document.createElement('label');
             label.textContent = option;
@@ -123,6 +132,7 @@ function displayQuestion(question) {
         }
     }
 }
+
 
 function nextQuestion() {
     if (totalQuestions-1 > currentQuestionIndex) {

@@ -123,7 +123,7 @@ const Index = () => {
       </div>
       {firstQuiz?.questions?.length>0 && (
       <img
-      src={`${host}:${port}/${firstQuiz?.questions[0]?.image}`} 
+      src={`${host}:${port}/${firstQuiz?.questions[1].options[3]?.image}`} 
       style={{height:'300px', width:'400px', borderRadius:"10px"}}
       />
     )}
