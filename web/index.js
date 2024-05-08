@@ -46,10 +46,24 @@ app.post(
 // also add a proxy rule for them in web/frontend/vite.config.js
 
 app.use("/api/*", shopify.validateAuthenticatedSession());
+app.use("/questionData/*", authenticateUser);
+async function authenticateUser(req,res,next){
+  let shop=req.query.shop;
+  let storename=await shopify.config.sessionStorage.findSessionsByShop(shop)
+  if(shop===storename[0].shop){
+    next();
+  }else{
+    res.send("User Not Authorized")
+  }
+ }
+ 
 
 app.use(express.json());
 app.use('/Uploads', express.static(path.join(__dirname, 'Uploads')));
 
+app.get("/questionData/info",async(req,res)=>{
+  res.status(200).send("Send Successfully")
+})
 
 app.post('/api/quiz/addQuizz', QuestionPic.array('images'), addQuizz);
 app.post('/api/quiz/shopQuizes', shopQuizes);
