@@ -58,7 +58,7 @@ export default defineConfig({
     proxy: {
       "^/(\\?.*)?$": proxyOptions,
       "^/api(/|(\\?.*)?$)": proxyOptions,
-      "^/questionData(/|(\\?.*)?$)": proxyOptions,
+      "^/quizzes(/|(\\?.*)?$)": proxyOptions,
     },
   },
 });

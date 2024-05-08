@@ -61,9 +61,11 @@ async function authenticateUser(req,res,next){
 app.use(express.json());
 app.use('/Uploads', express.static(path.join(__dirname, 'Uploads')));
 
-app.get("/questionData/info",async(req,res)=>{
+app.get("/quizzes/info",async(req,res)=>{
   res.status(200).json({messge:'sent data'})
 })
+app.post("/quizzes/firstQuiz", getShopFirstQuiz);
+
 
 app.post('/api/quiz/addQuizz', QuestionPic.array('images'), addQuizz);
 app.post('/api/quiz/shopQuizes', shopQuizes);
