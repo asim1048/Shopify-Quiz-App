@@ -16,6 +16,7 @@ const Index = () => {
   const [quizes, setQuizes] = useState([]);
   const [port,setPort]=useState(8000)
   const navigate = useNavigate();
+  console.log("firstQuiz",firstQuiz)
 
   useEffect(() => {
     const fetchStoreInfo = async () => {

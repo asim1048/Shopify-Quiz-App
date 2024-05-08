@@ -1,18 +1,12 @@
 <div class="app-form">
     <h1 class="text-align:{{ block.settings.alignment }}">{{ block.settings.form_title }}</h1>
-   
-    
-        <div class="quiz-container">
-            <h2>{{ quiz.title }}</h2>
-            {% for question in questions %}
-                <div class="question">
-                    <h3>{{ question.title }}</h3>
-                    
-                </div>
-            {% endfor %}
-        </div>
-    
+    <h2 class="quiz-title"></h2>
+    <div class="question-container"></div>
+    <button id="next-button" onclick="nextQuestion()">Next Question</button>
 </div>
+
+
+
 
 
 
