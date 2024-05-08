@@ -1,0 +1,38 @@
+<div class="app-form">
+   <h1 class="text-align:{{block.settings.alignment}}">{{block.settings.form_title}}</h1>
+   <form type="app-form">
+       <div class="username">
+           <label for="username">Your Name</label>
+           <input type="text" name="username" id="username">
+       </div>
+       <div class="email">
+           <label for="email">Email</label>
+           <input type="email" name="email" id="email">
+       </div>
+<input type="submit" value="Next Question" class="submit"/>
+   </form>
+   </div>
+
+
+   {% schema %}
+       {
+          "name": "Showing Questions",
+          "target": "section",
+          "class": "app-dashboard-app",
+          "stylesheet": "questions.css",
+          "javascript": "questions.js",
+          "settings": [
+           {
+              "label": "App Form Title",
+              "id": "form_title",
+              "type": "text"
+           },
+           {
+              "type": "text",
+              "id": "alignment",
+              "label": "Text Alignment",
+              "default": "center"
+           }
+          ]
+       }
+       {% endschema %}

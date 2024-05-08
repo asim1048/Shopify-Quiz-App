@@ -1,0 +1,17 @@
+.app-form{
+    width: 100%;
+    height: auto;
+    bottom: 2px solid #000;
+ }
+ .app-form form div {
+    display: flex;
+    flex-direction: column;
+    width: 90%; gap: 10px;
+ }
+ .app-form form input {
+    padding: 10px;
+    margin: 10px; /* This line sets margin-top */
+    width: 90%;
+    margin: auto; /* This line overrides margin-top */
+ }
+ 
