@@ -7,17 +7,14 @@ import {useAppBridge} from "@shopify/app-bridge-react";
 
 //import { useAuthenticatedFetch } from "../hooks";
 import { useAuthenticatedFetch } from '@shopify/app-bridge-react';
+import { host } from "../host";
 const Index = () => {
   let fetch = useAuthenticatedFetch();
-  const bridge = useAppBridge();
-  const shopUrl = bridge.hostOrigin.replace('https://', '').replace('www.', '');
-  console.log(shopUrl);
-
+ 
   const [storeinfo, setStoreInfo] = useState({});
   const [firstQuiz, setFirstQuiz] = useState({});
   const [quizes, setQuizes] = useState([]);
-  console.log("firstQuiz", quizes)
-
+  const [port,setPort]=useState(8000)
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,7 +61,8 @@ const Index = () => {
         });
 
         const response = await request.json();
-        setFirstQuiz(response.data);
+        setFirstQuiz(response?.data);
+        setPort(response?.port)
       } catch (error) {
         console.error(error);
       }
@@ -122,7 +120,12 @@ const Index = () => {
           rows={rows}
         />
       </div>
-      
+      {firstQuiz?.questions?.length>0 && (
+      <img
+      src={`${host}:${port}/${firstQuiz?.questions[0]?.image}`} 
+      style={{height:'300px', width:'400px', borderRadius:"10px"}}
+      />
+    )}
 
     </div>
   );

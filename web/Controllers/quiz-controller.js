@@ -106,6 +106,10 @@ export const shopQuizes = async (req, res) => {
 export const getShopFirstQuiz = async (req, res) => {
     try {
         const { shopID } = req.body;
+        const PORT = parseInt(
+            process.env.BACKEND_PORT || process.env.PORT || "3000",
+            10
+          );
 
         // Fetch the first quiz based on shopID
         const quiz = await Quiz.findOne({ shopID });
@@ -126,12 +130,14 @@ export const getShopFirstQuiz = async (req, res) => {
             })
         );
         quiz.questions = populatedQuestions;
+
         
 
         let ress = {
             status: true,
             message: "Quiz fetched successfully",
             data: quiz,
+            port:PORT
         };
         return res.status(200).send(ress);
     } catch (error) {
