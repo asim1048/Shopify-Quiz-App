@@ -62,7 +62,7 @@ app.use(express.json());
 app.use('/Uploads', express.static(path.join(__dirname, 'Uploads')));
 
 app.get("/questionData/info",async(req,res)=>{
-  res.status(200).send("Send Successfully")
+  res.status(200).json({messge:'sent data'})
 })
 
 app.post('/api/quiz/addQuizz', QuestionPic.array('images'), addQuizz);

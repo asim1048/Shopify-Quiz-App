@@ -3,7 +3,7 @@
 client_id = "c72a0325616e0295b9210ee2860c197c"
 name = "auiz-app"
 handle = "auiz-app"
-application_url = "https://reel-mike-cardiff-singing.trycloudflare.com"
+application_url = "https://aquarium-cultural-describing-steve.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://reel-mike-cardiff-singing.trycloudflare.com/auth/callback",
-  "https://reel-mike-cardiff-singing.trycloudflare.com/auth/shopify/callback",
-  "https://reel-mike-cardiff-singing.trycloudflare.com/api/auth/callback"
+  "https://aquarium-cultural-describing-steve.trycloudflare.com/auth/callback",
+  "https://aquarium-cultural-describing-steve.trycloudflare.com/auth/shopify/callback",
+  "https://aquarium-cultural-describing-steve.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
