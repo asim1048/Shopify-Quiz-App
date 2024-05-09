@@ -30,9 +30,10 @@ function fetchQuestions() {
                 const questions = data.data.questions;
                 questionsArray = questions; // Store questions in the array
                 totalQuestions = questions.length;
+                displayStepProgressBar(); // Display the initial step progress bar
                 displayQuestion(questions[currentQuestionIndex]); // Display the first question
                 displayQuizTitle(data.data.title); // Display the quiz title
-                console.log(host)
+                console.log(host);
             }
         })
         .catch(error => {
@@ -49,10 +50,10 @@ function displayQuizTitle(title) {
 // Function to toggle option selection
 function toggleOptionSelection(optionId, questionId) {
     const currentQuestion = questionsArray[currentQuestionIndex];
-    
+
     // Check if this option is already selected
     const existingIndex = selectedOptions.findIndex(option => option.questionId === questionId && option.optionId === optionId);
-    
+
     if (existingIndex !== -1) {
         // If already selected, remove it
         selectedOptions.splice(existingIndex, 1);
@@ -61,7 +62,7 @@ function toggleOptionSelection(optionId, questionId) {
         if (currentQuestion.type === 'SingleSelect') {
             selectedOptions = selectedOptions.filter(option => option.questionId !== questionId);
         }
-        
+
         // Add the new selection
         selectedOptions.push({ questionId, optionId });
     }
@@ -103,14 +104,14 @@ function displayQuestion(question) {
 
     questionElement.appendChild(titleElement);
 
-    
+
 
     // Add input field if the question type is input
     if (question.type === 'SimpleInputFields') {
         const inputElement = document.createElement('input');
         inputElement.type = 'text';
         inputElement.placeholder = question.title; // Use the title as the placeholder
-        
+
         // Apply CSS styles to the input element
         inputElement.style.width = '350px'; // Set the width to 100%
         inputElement.style.padding = '12px'; // Set padding
@@ -122,19 +123,19 @@ function displayQuestion(question) {
         inputElement.style.fontFamily = 'Arial, sans-serif'; // Set font family
         inputElement.style.color = 'black'; // Set text color
         inputElement.style.backgroundColor = '#fff'; // Set background color
-       
-        
-       
-    
+
+
+
+
         questionElement.appendChild(inputElement);
     }
-    
+
 
     // Add options if the question type is SingleSelect or MultiSelect
     if (question.type === 'SingleSelect' || question.type === 'MultiSelect') {
         const optionsContainer = document.createElement('div');
         optionsContainer.classList.add('options-container'); // Add a class for styling
-    
+
         question.options.forEach(option => {
             const optionItem = document.createElement('div');
             optionItem.classList.add('option-item'); // Add a class for styling
@@ -144,13 +145,13 @@ function displayQuestion(question) {
             if (isSelected) {
                 optionItem.classList.add('selected'); // Add selected class
             }
-            
+
             // Add event listener to toggle selection
             optionItem.addEventListener('click', () => {
                 toggleOptionSelection(option.id, question._id);
                 optionItem.classList.toggle('selected'); // Toggle selected class
             });
-    
+
             // Add image for option if available
             if (option.image) {
                 const imageElement = document.createElement('img');
@@ -158,17 +159,17 @@ function displayQuestion(question) {
                 imageElement.alt = option.value; // Use option value as alt text
                 optionItem.appendChild(imageElement);
             }
-    
+
             // Add value of option
             const valueElement = document.createElement('span');
             valueElement.textContent = option.value; // Assuming option is an object with 'value' property
             optionItem.appendChild(valueElement);
-    
+
             // Add radio or checkbox input (if needed)
-    
+
             optionsContainer.appendChild(optionItem);
         });
-    
+
         questionElement.appendChild(optionsContainer);
     }
     else if (question.type === 'radioButton') { // Adjusted condition for radioButton
@@ -197,11 +198,45 @@ function displayQuestion(question) {
     }
 }
 
+// Function to display the step progress bar
+function displayStepProgressBar() {
+    const stepperWrapper = document.querySelector('.stepper-wrapper');
+    if (stepperWrapper) {
+        stepperWrapper.innerHTML = ''; // Clear existing content
+
+        // Generate step items
+        for (let i = 0; i < totalQuestions; i++) {
+            const stepItem = document.createElement('div');
+            stepItem.classList.add('stepper-item');
+            if (i < currentQuestionIndex+1) {
+                stepItem.classList.add('completed');
+            } else if (i === currentQuestionIndex+1) {
+                stepItem.classList.add('active');
+            }
+            
+            const stepCounter = document.createElement('div');
+            stepCounter.classList.add('step-counter');
+            stepCounter.textContent = i + 1;
+            stepItem.appendChild(stepCounter);
+            
+            const stepName = document.createElement('div');
+            stepName.classList.add('step-name');
+            stepName.textContent = `Step ${i + 1}`;
+            stepItem.appendChild(stepName);
+
+            stepperWrapper.appendChild(stepItem);
+        }
+    }
+}
+
+
+
 
 function nextQuestion() {
-    if (totalQuestions-1 > currentQuestionIndex) {
+    if (totalQuestions - 1 > currentQuestionIndex) {
         currentQuestionIndex++;
         displayQuestion(questionsArray[currentQuestionIndex]); // Display next question
+        displayStepProgressBar(); // Update step progress bar
     } else {
         console.log("Submit the code ");
     }

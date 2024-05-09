@@ -43,6 +43,28 @@ const Index = () => {
   }, []);
 
   const onPress = async () => {
+    //CHeck Quiz Title
+    if (quizTitle == "") {
+      alert(`Please Enter the quiz title`);
+      return;
+    }
+
+    //Checking atleast one option
+    let indexOpt = -1;
+    questions.find((question, index) => {
+      if (question.type === "SingleSelect" || question.type === "MultiSelect" || question.type === "radioButton") {
+        if (question?.options?.length <= 0) {
+          indexOpt = index
+          return;
+        }
+      }
+    });
+    if (indexOpt != -1) {
+      alert(`Please add atleast one option for question ${indexOpt + 1}.`);
+      return;
+    }
+
+
     // Check if every question has a title with length greater than 1 and if image is added for SingleSelect and MultiSelect questions
     const invalidQuestion = questions.find((question, index) => {
       if (question.title.length < 2) {
@@ -200,47 +222,54 @@ const Index = () => {
       style={{
         display: "flex",
         flexDirection: "column",
-        backgroundColor: "#353535",
+        backgroundColor: "white",
         minHeight: "100vh",
         color: "white",
         padding: "20px",
       }}
     >
       <Header buttonText={"Submit Quiz"} callBackFunction={onPress} />
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          margin: "10px 20%",
-          gap: "20px",
-        }}
-      >
-        <Text alignment="center" variant="heading2xl" as="h3">Quiz Creation</Text>
+      <div style={{
+        display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '100%', borderRadius: '8px', margin: '50px 10%',
+      backgroundColor:'#4c7480'
+      }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            margin: "50px 20%",
+            gap: "20px",
+            color:'white'
+          }}
+        >
+          <Text alignment="center" variant="heading2xl" as="h3">Quiz Creation</Text>
 
-        <div>
-          <Text variant="bodyLg" as="h3">Quiz Title</Text>
-          <TextField
-            value={quizTitle}
-            placeholder="Enter title here..."
-            onChange={(newValue) => setQuizTitle(newValue)}
-          />
-        </div>
-        {/* Render the questions */}
-        {questions.map((question, index) => (
-          <div key={index}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '3px' }}>
-              <Text variant="headingMd" as="h3">Question {index + 1}</Text>
-              <Button variant="secondary" style={{ verticalAlign: 'middle' }} onClick={() => deleteQuestion(index)}>❌</Button>
-
-            </div>
-            {renderQuestionComponent(question, index)}
+          <div>
+            <Text variant="bodyLg" as="h3">Quiz Title</Text>
+            <TextField
+              value={quizTitle}
+              placeholder="Enter title here..."
+              onChange={(newValue) => setQuizTitle(newValue)}
+            />
           </div>
-        ))}
+          {/* Render the questions */}
+          {questions.map((question, index) => (
+            <div key={index}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '3px' }}>
+                <Text variant="headingMd" as="h3">Question {index + 1}</Text>
+                <Button variant="secondary" style={{ verticalAlign: 'middle' }} onClick={() => deleteQuestion(index)}>❌</Button>
+
+              </div>
+              {renderQuestionComponent(question, index)}
+            </div>
+          ))}
 
 
-        <Button primary onClick={() => setQuestionModal(true)}>
-          Add A Question
-        </Button>
+          <Button primary onClick={() => setQuestionModal(true)}>
+            Add A Question
+          </Button>
+        </div>
+
       </div>
 
       {/* Question Type Picker Modal */}

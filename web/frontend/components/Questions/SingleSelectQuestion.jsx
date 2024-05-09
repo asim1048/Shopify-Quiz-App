@@ -90,11 +90,18 @@ const SingleSelectQuestion = ({ question, setQuestions, index }) => {
       {question?.options?.map((option, optionIndex) => (
         <div key={option.id} style={{ marginTop: '10px' }}>
           <Text variant="bodyLg" as="h6">Option {optionIndex + 1}:</Text>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:"center",marginBottom:'3px'}}>
+          <div style={{ width: '90%'}}>
+
           <TextField
             value={option.value}
             placeholder="Enter option..."
             onChange={(newValue) => handleOptionChange(option.id, newValue)}
           />
+          </div>
+          <Button variant="secondary" onClick={() => handleRemoveOption(option.id)} style={{ verticalAlign: 'middle' }}>❌</Button>
+
+          </div>
           <label htmlFor={`image-input-${index}-${optionIndex}`}>Upload Image:</label>
           <input
             type="file"
@@ -109,7 +116,6 @@ const SingleSelectQuestion = ({ question, setQuestions, index }) => {
               <img src={URL.createObjectURL(images[optionIndex])} alt="Uploaded Preview" style={{ maxWidth: '100%', maxHeight: '200px', marginTop: '10px', borderRadius: "7px" }} />
             </div>
           )}
-          <Button variant="secondary" onClick={() => handleRemoveOption(option.id)}>Remove Option</Button>
         </div>
       ))}
       <div style={{ marginTop: '10px', minWidth: "100%", display: 'flex', justifyContent: 'center' }}>

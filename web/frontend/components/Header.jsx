@@ -4,7 +4,7 @@ const Header = ({ buttonText, callBackFunction }) => {
     const navigate = useNavigate();
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0px 10%' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0px 10%', color:'black' }}>
             <div style={{ cursor: 'pointer', }} onClick={() => {
                 navigate("/");
 
