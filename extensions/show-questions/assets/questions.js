@@ -1,6 +1,6 @@
-document.addEventListener("DOMContentLoaded", function () {
-    fetchQuestions();
-});
+// document.addEventListener("DOMContentLoaded", function () {
+//     fetchQuestions();
+// });
 
 let currentQuestionIndex = 0; // Keep track of the current question index
 let totalQuestions = 0; // Total number of questions
@@ -9,13 +9,13 @@ let host = "";
 let selectedOptions = [];
 
 
-function fetchQuestions() {
+function fetchQuestions(shopId) {
     fetch(`${location.origin}/apps/proxy-1/firstQuiz?shop=${Shopify.shop}`, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ shopID: 63500976295 })
+        body: JSON.stringify({ shopID: shopId })
     })
         .then(response => {
             if (!response.ok) {

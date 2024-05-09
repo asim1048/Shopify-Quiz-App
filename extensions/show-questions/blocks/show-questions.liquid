@@ -1,12 +1,19 @@
 <div class="app-form">
     <h1 style="text-align:{{ block.settings.alignment }}">{{ block.settings.form_title }}</h1>
+    <h2 style="display: none;">{{ shop.id }}</h2> <!-- Hide the shop ID -->
     <h2 class="quiz-title"></h2>
     <div class="stepper-wrapper"></div> <!-- Add the stepper-wrapper here -->
     <div class="question-container"></div>
     <button id="next-button" onclick="nextQuestion()">NEXT</button>
 </div>
 
-
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const shopIdElement = document.querySelector('.app-form h2');
+        const shopId = shopIdElement.textContent.trim();
+        fetchQuestions(shopId); // Pass the shop ID to fetchQuestions function
+    });
+</script>
 
 
 
