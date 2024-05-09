@@ -3,7 +3,7 @@
 client_id = "c72a0325616e0295b9210ee2860c197c"
 name = "auiz-app"
 handle = "auiz-app"
-application_url = "https://rides-salt-factors-collectables.trycloudflare.com"
+application_url = "https://lunch-attachments-making-computed.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://rides-salt-factors-collectables.trycloudflare.com/auth/callback",
-  "https://rides-salt-factors-collectables.trycloudflare.com/auth/shopify/callback",
-  "https://rides-salt-factors-collectables.trycloudflare.com/api/auth/callback"
+  "https://lunch-attachments-making-computed.trycloudflare.com/auth/callback",
+  "https://lunch-attachments-making-computed.trycloudflare.com/auth/shopify/callback",
+  "https://lunch-attachments-making-computed.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

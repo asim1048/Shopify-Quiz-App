@@ -1,5 +1,6 @@
 import Question from "../Models/question.js";
 import Quiz from '../Models/quiz.js'
+import {host} from '../host/index.js'
 export const addQuizz = async (req, res) => {
     try {
         const data = req.body;
@@ -142,7 +143,7 @@ export const getShopFirstQuiz = async (req, res) => {
             status: true,
             message: "Quiz fetched successfully",
             data: quiz,
-            port: PORT
+            host:`${host}:${PORT}`
         };
         return res.status(200).send(ress);
     } catch (error) {

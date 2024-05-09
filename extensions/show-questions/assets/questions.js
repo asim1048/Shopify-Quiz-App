@@ -5,7 +5,9 @@ document.addEventListener("DOMContentLoaded", function () {
 let currentQuestionIndex = 0; // Keep track of the current question index
 let totalQuestions = 0; // Total number of questions
 let questionsArray = []; // Array to store questions locally
-let port = 0;
+let host = "";
+let selectedOptions = [];
+
 
 function fetchQuestions() {
     fetch(`${location.origin}/apps/proxy-1/firstQuiz?shop=${Shopify.shop}`, {
@@ -24,12 +26,13 @@ function fetchQuestions() {
         .then(data => {
             // Handle the response data
             if (data && data.data.questions) {
-                port = data.port;
+                host = data.host;
                 const questions = data.data.questions;
                 questionsArray = questions; // Store questions in the array
                 totalQuestions = questions.length;
                 displayQuestion(questions[currentQuestionIndex]); // Display the first question
                 displayQuizTitle(data.data.title); // Display the quiz title
+                console.log(host)
             }
         })
         .catch(error => {
@@ -43,6 +46,40 @@ function displayQuizTitle(title) {
         quizTitleElement.textContent = title;
     }
 }
+// Function to toggle option selection
+function toggleOptionSelection(optionId, questionId) {
+    const currentQuestion = questionsArray[currentQuestionIndex];
+    
+    // Check if this option is already selected
+    const existingIndex = selectedOptions.findIndex(option => option.questionId === questionId && option.optionId === optionId);
+    
+    if (existingIndex !== -1) {
+        // If already selected, remove it
+        selectedOptions.splice(existingIndex, 1);
+    } else {
+        // For SingleSelect questions, remove any existing selections for this question
+        if (currentQuestion.type === 'SingleSelect') {
+            selectedOptions = selectedOptions.filter(option => option.questionId !== questionId);
+        }
+        
+        // Add the new selection
+        selectedOptions.push({ questionId, optionId });
+    }
+
+    // If SingleSelect question, remove any other selections
+    if (currentQuestion.type === 'SingleSelect') {
+        const otherOptions = document.querySelectorAll('.option-item.selected');
+        otherOptions.forEach(option => {
+            if (option.getAttribute('data-question-id') !== questionId) {
+                option.classList.remove('selected');
+            }
+        });
+    }
+}
+
+
+
+
 
 function displayQuestion(question) {
     const questionContainer = document.querySelector('.question-container');
@@ -57,57 +94,84 @@ function displayQuestion(question) {
     const questionElement = document.createElement('div');
     questionElement.classList.add('question');
 
-    const titleElement = document.createElement('h3');
+    const titleElement = document.createElement('p');
     titleElement.textContent = question.title;
+    titleElement.style.marginTop = '-10px'; // Set font size
+    titleElement.style.fontSize = '20px'; // Set font size
+    titleElement.style.color = 'black'; // Set text color
+    titleElement.style.fontFamily = 'Arial, sans-serif'; // Set font family
+
     questionElement.appendChild(titleElement);
 
-    // Add image if available
-    if (question.image) {
-        const imageElement = document.createElement('img');
-        imageElement.src = `http://localhost:${port}/${question.image}`; // Assuming 'port' variable holds the port number
-        imageElement.alt = question.title; // Use title as alt text
-        questionElement.appendChild(imageElement);
-    }
+    
 
     // Add input field if the question type is input
     if (question.type === 'SimpleInputFields') {
         const inputElement = document.createElement('input');
         inputElement.type = 'text';
         inputElement.placeholder = question.title; // Use the title as the placeholder
+        
+        // Apply CSS styles to the input element
+        inputElement.style.width = '350px'; // Set the width to 100%
+        inputElement.style.padding = '12px'; // Set padding
+        inputElement.style.marginTop = '4px'; // Set margin-top
+        inputElement.style.border = '1px solid #ccc'; // Add a border
+        inputElement.style.borderRadius = '4px'; // Add border-radius for rounded corners
+        inputElement.style.fontSize = '16px'; // Set font size
+        inputElement.style.outline = 'none'; // Set font size
+        inputElement.style.fontFamily = 'Arial, sans-serif'; // Set font family
+        inputElement.style.color = 'black'; // Set text color
+        inputElement.style.backgroundColor = '#fff'; // Set background color
+       
+        
+       
+    
         questionElement.appendChild(inputElement);
     }
+    
 
     // Add options if the question type is SingleSelect or MultiSelect
     if (question.type === 'SingleSelect' || question.type === 'MultiSelect') {
+        const optionsContainer = document.createElement('div');
+        optionsContainer.classList.add('options-container'); // Add a class for styling
+    
         question.options.forEach(option => {
             const optionItem = document.createElement('div');
-            if (question.type === 'MultiSelect') {
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.value = option.value; // Assuming option is an object with 'value' and 'image' properties
-                optionItem.appendChild(checkbox);
-            } else {
-                const radio = document.createElement('input');
-                radio.type = 'radio';
-                radio.name = 'option'; // Ensure all radio buttons have the same name
-                radio.value = option.value; // Assuming option is an object with 'value' and 'image' properties
-                optionItem.appendChild(radio);
-            }
-            const label = document.createElement('label');
-            label.textContent = option.value; // Assuming option is an object with 'value' and 'image' properties
-            optionItem.appendChild(label);
+            optionItem.classList.add('option-item'); // Add a class for styling
 
+            // Check if option is selected
+            const isSelected = selectedOptions.some(option => option.questionId === question._id && option.optionId === option.id);
+            if (isSelected) {
+                optionItem.classList.add('selected'); // Add selected class
+            }
+            
+            // Add event listener to toggle selection
+            optionItem.addEventListener('click', () => {
+                toggleOptionSelection(option.id, question._id);
+                optionItem.classList.toggle('selected'); // Toggle selected class
+            });
+    
             // Add image for option if available
             if (option.image) {
                 const imageElement = document.createElement('img');
-                imageElement.src = `http://localhost:${port}/${option.image}`; // Assuming 'port' variable holds the port number
+                imageElement.src = `${host}/${option.image}`; // Assuming 'host' holds the host URL
                 imageElement.alt = option.value; // Use option value as alt text
                 optionItem.appendChild(imageElement);
             }
-
-            questionElement.appendChild(optionItem);
+    
+            // Add value of option
+            const valueElement = document.createElement('span');
+            valueElement.textContent = option.value; // Assuming option is an object with 'value' property
+            optionItem.appendChild(valueElement);
+    
+            // Add radio or checkbox input (if needed)
+    
+            optionsContainer.appendChild(optionItem);
         });
-    } else if (question.type === 'radioButton') { // Adjusted condition for radioButton
+    
+        questionElement.appendChild(optionsContainer);
+    }
+    else if (question.type === 'radioButton') { // Adjusted condition for radioButton
         question.options.forEach(option => {
             const optionItem = document.createElement('div');
             const radio = document.createElement('input');
@@ -116,7 +180,7 @@ function displayQuestion(question) {
             radio.value = option.value;
             optionItem.appendChild(radio);
             const label = document.createElement('label');
-            label.textContent = option;
+            label.textContent = option.value;
             optionItem.appendChild(label);
             questionElement.appendChild(optionItem);
         });

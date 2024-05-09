@@ -1,9 +1,12 @@
 .app-form {
    display: flex;
    flex-direction: column;
-   align-items: center; /* Center align the items horizontally */
-   justify-content: center; /* Center align the items vertically */
-   text-align: center; /* Center align the text */
+   align-items: center;
+   /* Center align the items horizontally */
+   justify-content: center;
+   /* Center align the items vertically */
+   text-align: center;
+   /* Center align the text */
    width: 100%;
    height: auto;
    padding: 20px;
@@ -11,26 +14,69 @@
 
 .quiz-title {
    margin-top: -20px;
+   font-size: 22px;
+   color: black;
+   font-family: Arial, Helvetica, sans-serif;
 }
 
 .question-container {
-   color:black
+   color: black
 }
 
 .question {
    color: black;
 }
 
+.options-container {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 30px;
+}
+
+.option-item {
+   flex: 0 0 calc(20.33% - 20px);
+   /* Adjust width as needed */
+   margin: 0 10px 20px 0;
+   text-align: center;
+   cursor: pointer;
+}
+
+.option-item img {
+   display: block;
+   margin: 0 auto 10px;
+   /* Center image */
+   height: 150px;
+   width: 150px;
+   border-radius: 5px
+}
+
+
+.option-item span {
+   display: block;
+}
+.option-item.selected {
+   padding: 10px;
+   border-radius: 10px;
+   border: 0.5px solid #18584B; /* Border color for selected options */
+   box-shadow: 0px 0px 3px #18584B; /* Box shadow for selected options */
+}
+
+
 /* Style for the next button */
 button {
+   margin-top: 15px;
    padding: 10px 20px;
-   background-color: #4CAF50;
+   background-color: #18584B;
    color: white;
+   font-size: 18px;
+   font-weight: bold;
+   width: 130px;
+   border-radius: 8px;
    border: none;
-   border-radius: 4px;
+   letter-spacing: 2px;
    cursor: pointer;
 }
 
 button:hover {
-   background-color: #45a049;
+   background-color: #39a791;
 }
