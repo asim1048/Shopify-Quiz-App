@@ -155,3 +155,62 @@ export const getShopFirstQuiz = async (req, res) => {
         return res.status(500).send(ress);
     }
 }
+
+export const quizanswersBaseProductIDS = async (req, res) => {
+    try {
+        const { shopID,QuizID,selectedOptions } = req.body;
+        const PORT = parseInt(
+            process.env.BACKEND_PORT || process.env.PORT || "3000",
+            10
+        );
+
+        // Fetch the first quiz based on shopID
+        const quiz = await Quiz.findById( QuizID );
+
+        if (!quiz) {
+            // If no quiz found, return appropriate response
+            let ress = {
+                status: false,
+                message: "No quiz found for the shopID",
+            };
+            return res.status(404).send(ress);
+        }
+
+        // Populate the questions array with question documents
+        const populatedQuestions = await Promise.all(
+            quiz.questions.map(async (questionId) => {
+                return await Question.findById(questionId);
+            })
+        );
+        quiz.questions = populatedQuestions;
+
+        let productIDs = [];
+        selectedOptions?.forEach(option => {
+            const question = populatedQuestions?.find(q => q?._id == option?.questionId);
+            if (question && question?.options && question?.options?.length > 0) {
+                const selectedOption = question?.options.find(opt => opt?.value == option?.value);
+                    selectedOption?.Products?.forEach(product => {
+                        productIDs.push(product);
+                    });
+                
+            }
+        });
+        productIDs = [...new Set(productIDs)];
+
+
+        let ress = {
+            status: true,
+            message: "Quiz fetched successfully",
+            data: productIDs
+        };
+        return res.status(200).send(ress);
+    } catch (error) {
+        console.log(error)
+        let ress = {
+            status: false,
+            message: "Something went wrong in the backend",
+            error: error,
+        };
+        return res.status(500).send(ress);
+    }
+}

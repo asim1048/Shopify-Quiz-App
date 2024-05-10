@@ -1,92 +1,47 @@
-import React, { useState, useEffect } from "react";
-import { Text, DataTable } from "@shopify/polaris";
+import React, { useState, useEffect, useContext } from "react";
+import { Text, DataTable,Button } from "@shopify/polaris";
 import Header from "../components/Header";
 import { useNavigate } from 'react-router-dom';
+
 import { useAppBridge } from "@shopify/app-bridge-react";
 
 
 //import { useAuthenticatedFetch } from "../hooks";
 import { useAuthenticatedFetch } from '@shopify/app-bridge-react';
+import { PublicContext } from '../context/PublicContext'
+
 const Index = () => {
   let fetch = useAuthenticatedFetch();
+  const {quizes,setSingleQuizDetail}=useContext(PublicContext)
 
-  const [storeinfo, setStoreInfo] = useState({});
-  const [firstQuiz, setFirstQuiz] = useState({});
-  const [quizes, setQuizes] = useState([]);
-  const [host, setHost] = useState(8000)
   const navigate = useNavigate();
   // console.log("firstQuiz",firstQuiz)
 
-  useEffect(() => {
-    const fetchStoreInfo = async () => {
-      try {
-        const request = await fetch("/api/store/info");
-        const response = await request.json();
-        setStoreInfo(response?.data[0]);
-        fetchQuizes(response?.data[0]?.id)
-        fetchFirstQuiz(response?.data[0]?.id)
-
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    const fetchQuizes = async (id) => {
-      try {
-        const request = await fetch("/api/quiz/shopQuizes", {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json' // Specify JSON content type
-          },
-          body: JSON.stringify({
-            shopID: id // Pass shopID directly in the request body
-          })
-        });
-
-        const response = await request.json();
-        setQuizes(response?.data);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    const fetchFirstQuiz = async (id) => {
-      try {
-        const request = await fetch("/api/quiz/getShopFirstQuiz", {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json' // Specify JSON content type
-          },
-          body: JSON.stringify({
-            shopID: id // Pass shopID directly in the request body
-          })
-        });
-
-        const response = await request.json();
-        setFirstQuiz(response?.data);
-        setHost(response?.host)
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    fetchStoreInfo()
-  }, []);
+  
 
   const onPress = () => {
     navigate("/create-quiz");
   };
 
 
+  const viewQuizDetail = (quiz) => {
+    setSingleQuizDetail(quiz)
+        navigate("/QuizDetail");
+
+  };
+
   const rows = quizes.flatMap(quiz => {
     // Create an array to store rows for each quiz
     const quizRows = quiz.questions.map((question, index) => {
-      // For the first question in the quiz, include the quiz name
+      // For the first question in the quiz, include the quiz name and detail button
       const quizName = index === 0 ? quiz.title : '';
+      const detailButton = index === 0 ? <Button onClick={() => viewQuizDetail(quiz)}>Details</Button> : null;
 
       return [
         quizName, // Quiz name (empty string for subsequent questions in the same quiz)
         question.title, // Question title
         question.type, // Question type
-        new Date(question.createdAt).toLocaleString(), // Question created at
+        detailButton // Detail button (only for the first question)
       ];
     });
 
@@ -95,7 +50,7 @@ const Index = () => {
 
 
 
-  const headings = ['Quiz Name', 'Question Title', 'Question Type', 'Created At'];
+  const headings = ['Quiz Name', 'Question Title', 'Question Type', "Actions"];
 
   return (
     <div

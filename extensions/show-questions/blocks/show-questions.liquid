@@ -5,6 +5,24 @@
     <div class="stepper-wrapper"></div> <!-- Add the stepper-wrapper here -->
     <div class="question-container"></div>
     <button id="next-button" onclick="nextQuestion()">NEXT</button>
+    
+</div>
+
+<div class="product-list" style="display: none;"> <!-- Hide the product list initially -->
+  {% for product in collections.all.products %}
+    <div class="product">
+      <img src="{{ product.featured_image | img_url: 'medium' }}" alt="{{ product.title }}">
+      <h2>{{ product.title }}</h2>
+            <h3>{{ product.id }}</h3>
+
+      <p>{{ product.price | money }}</p>
+      <a href="{{ product.url }}">View Product</a>
+    </div>
+  {% endfor %}
+</div>
+
+<div class="product-list-filtered" > <!-- Hide the product list initially -->
+  
 </div>
 
 <script>
@@ -12,6 +30,24 @@
         const shopIdElement = document.querySelector('.app-form h2');
         const shopId = shopIdElement.textContent.trim();
         fetchQuestions(shopId); // Pass the shop ID to fetchQuestions function
+
+        
+
+        // Retrieve product list from hidden div
+        const productList = document.querySelector('.product-list');
+        const products = Array.from(productList.querySelectorAll('.product'));
+
+        // Extract product data and create an array
+        const productData = products.map(product => ({
+            title: product.querySelector('h2').textContent,
+            id: product.querySelector('h3').textContent,
+            price: product.querySelector('p').textContent,
+            imageUrl: product.querySelector('img').getAttribute('src'),
+            url: product.querySelector('a').getAttribute('href')
+        }));
+
+        // Call the displayProducts function with the product data
+        displayProducts(productData);
     });
 </script>
 

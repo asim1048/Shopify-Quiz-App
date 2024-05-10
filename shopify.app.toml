@@ -3,7 +3,7 @@
 client_id = "c72a0325616e0295b9210ee2860c197c"
 name = "auiz-app"
 handle = "auiz-app"
-application_url = "https://inform-anything-lt-pdt.trycloudflare.com"
+application_url = "https://tech-metro-cia-mono.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://inform-anything-lt-pdt.trycloudflare.com/auth/callback",
-  "https://inform-anything-lt-pdt.trycloudflare.com/auth/shopify/callback",
-  "https://inform-anything-lt-pdt.trycloudflare.com/api/auth/callback"
+  "https://tech-metro-cia-mono.trycloudflare.com/auth/callback",
+  "https://tech-metro-cia-mono.trycloudflare.com/auth/shopify/callback",
+  "https://tech-metro-cia-mono.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

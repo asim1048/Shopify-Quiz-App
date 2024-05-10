@@ -7,9 +7,19 @@ let totalQuestions = 0; // Total number of questions
 let questionsArray = []; // Array to store questions locally
 let host = "";
 let selectedOptions = [];
+let shopID;
+let QuizID;
+let selectedProductIDS=[] 
+let productss=[]
+
+function displayProducts(products){
+    productss=products;
+}
 
 
 function fetchQuestions(shopId) {
+    shopID=shopId;
+    console.log(Shopify)
     fetch(`${location.origin}/apps/proxy-1/firstQuiz?shop=${Shopify.shop}`, {
         method: 'POST',
         headers: {
@@ -27,13 +37,13 @@ function fetchQuestions(shopId) {
             // Handle the response data
             if (data && data.data.questions) {
                 host = data.host;
+                QuizID=data.data._id;
                 const questions = data.data.questions;
                 questionsArray = questions; // Store questions in the array
                 totalQuestions = questions.length;
                 displayStepProgressBar(); // Display the initial step progress bar
                 displayQuestion(questions[currentQuestionIndex]); // Display the first question
                 displayQuizTitle(data.data.title); // Display the quiz title
-                console.log(host);
             }
         })
         .catch(error => {
@@ -48,27 +58,27 @@ function displayQuizTitle(title) {
     }
 }
 // Function to toggle option selection
-function toggleOptionSelection(optionId, questionId) {
+function toggleOptionSelection(value, questionId) {
     const currentQuestion = questionsArray[currentQuestionIndex];
 
     // Check if this option is already selected
-    const existingIndex = selectedOptions.findIndex(option => option.questionId === questionId && option.optionId === optionId);
+    const existingIndex = selectedOptions.findIndex(option => option.questionId === questionId && option.value === value);
 
     if (existingIndex !== -1) {
         // If already selected, remove it
         selectedOptions.splice(existingIndex, 1);
     } else {
         // For SingleSelect questions, remove any existing selections for this question
-        if (currentQuestion.type === 'SingleSelect') {
+        if (currentQuestion.type === 'SingleSelect' || currentQuestion.type == 'radioButton') {
             selectedOptions = selectedOptions.filter(option => option.questionId !== questionId);
         }
 
         // Add the new selection
-        selectedOptions.push({ questionId, optionId });
+        selectedOptions.push({ questionId, value });
     }
 
     // If SingleSelect question, remove any other selections
-    if (currentQuestion.type === 'SingleSelect') {
+    if (currentQuestion.type === 'SingleSelect' ||currentQuestion.type == 'radioButton') {
         const otherOptions = document.querySelectorAll('.option-item.selected');
         otherOptions.forEach(option => {
             if (option.getAttribute('data-question-id') !== questionId) {
@@ -76,10 +86,8 @@ function toggleOptionSelection(optionId, questionId) {
             }
         });
     }
+    console.log("selectedOptions",selectedOptions)
 }
-
-
-
 
 
 function displayQuestion(question) {
@@ -148,7 +156,7 @@ function displayQuestion(question) {
 
             // Add event listener to toggle selection
             optionItem.addEventListener('click', () => {
-                toggleOptionSelection(option.id, question._id);
+                toggleOptionSelection(option.value, question._id);
                 optionItem.classList.toggle('selected'); // Toggle selected class
             });
 
@@ -183,6 +191,9 @@ function displayQuestion(question) {
             const label = document.createElement('label');
             label.textContent = option.value;
             optionItem.appendChild(label);
+            optionItem.addEventListener('click', () => {
+                toggleOptionSelection(option.value, question._id);
+            });
             questionElement.appendChild(optionItem);
         });
     }
@@ -230,8 +241,6 @@ function displayStepProgressBar() {
 }
 
 
-
-
 function nextQuestion() {
     if (totalQuestions - 1 > currentQuestionIndex) {
         currentQuestionIndex++;
@@ -239,5 +248,71 @@ function nextQuestion() {
         displayStepProgressBar(); // Update step progress bar
     } else {
         console.log("Submit the code ");
+        console.log("shopID",shopID)
+        console.log("QuizID",QuizID)
+
+    fetch(`${location.origin}/apps/proxy-1/answersBaseProductIDS?shop=${Shopify.shop}`, {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ shopID: shopID,QuizID:QuizID,selectedOptions:selectedOptions })
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch questions');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Handle the response data
+            console.log("Data",data)
+            selectedProductIDS=data.data;
+            displayProductsAfterFiltering()
+        })
+        .catch(error => {
+            console.error('Error fetching questions:', error);
+        });
     }
+
+
+    //FIlter the products based on the selectedProductIDS array for  products and the display
+}
+function displayProductsAfterFiltering() {
+
+    // Filter products based on selectedProductIDS
+    const filteredProducts = productss.filter(product => selectedProductIDS.includes(product.id));
+
+    // Clear existing content in product-list
+    const productListContainer = document.querySelector('.product-list-filtered');
+    productListContainer.innerHTML = '';
+
+    console.log("filteredProducts",filteredProducts)
+
+    // Display filtered products
+    filteredProducts.forEach(product => {
+        const productElement = document.createElement('div');
+        productElement.classList.add('product');
+
+        const imageElement = document.createElement('img');
+        imageElement.src = product.imageUrl;
+        imageElement.alt = product.title;
+
+        const titleElement = document.createElement('h2');
+        titleElement.textContent = product.title;
+
+        const priceElement = document.createElement('p');
+        priceElement.textContent = product.price;
+
+        const viewProductLink = document.createElement('a');
+        viewProductLink.href = product.url;
+        viewProductLink.textContent = 'View Product';
+
+        productElement.appendChild(imageElement);
+        productElement.appendChild(titleElement);
+        productElement.appendChild(priceElement);
+        productElement.appendChild(viewProductLink);
+
+        productListContainer.appendChild(productElement);
+    });
 }

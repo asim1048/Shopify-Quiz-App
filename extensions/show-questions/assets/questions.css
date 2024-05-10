@@ -157,3 +157,8 @@ button:hover {
  .stepper-item:last-child::after {
    content: none;
  }
+ .product-list-filtered{
+   display: flex;
+   flex-wrap: wrap;
+   gap: 50px;
+ }

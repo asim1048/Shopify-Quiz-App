@@ -13,7 +13,8 @@ import  Connection  from './Database/db.js';
 
 import QuestionPic from './Middleware/Question.js';
 
-import { addQuizz,shopQuizes,getShopFirstQuiz } from './Controllers/quiz-controller.js';
+import { addQuizz,shopQuizes,getShopFirstQuiz,quizanswersBaseProductIDS } from './Controllers/quiz-controller.js';
+import { updateQuestionOptions } from "./Controllers/question-controller.js";
 
 const PORT = parseInt(
   process.env.BACKEND_PORT || process.env.PORT || "3000",
@@ -65,11 +66,13 @@ app.get("/quizzes/info",async(req,res)=>{
   res.status(200).json({messge:'sent data'})
 })
 app.post("/quizzes/firstQuiz", getShopFirstQuiz);
+app.post("/quizzes/answersBaseProductIDS", quizanswersBaseProductIDS);
 
 
 app.post('/api/quiz/addQuizz', QuestionPic.array('images'), addQuizz);
 app.post('/api/quiz/shopQuizes', shopQuizes);
 app.post('/api/quiz/getShopFirstQuiz', getShopFirstQuiz);
+app.post('/api/quiz/updateQuestionOptions', updateQuestionOptions);
 
 //Read Store/Shop info
 app.get("/api/store/info", async(_req,res)=>{
