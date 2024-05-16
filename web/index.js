@@ -13,7 +13,7 @@ import  Connection  from './Database/db.js';
 
 import QuestionPic from './Middleware/Question.js';
 import { host } from "./host/index.js";
-import { addQuizz,shopQuizes,getShopFirstQuiz,quizanswersBaseProductIDS,deleteQuiz,takeCodeAndDisplay,updateQuiz } from './Controllers/quiz-controller.js';
+import { addQuizz,shopQuizes,quizDetail,getShopFirstQuiz,quizanswersBaseProductIDS,deleteQuiz,takeCodeAndDisplay,updateQuiz } from './Controllers/quiz-controller.js';
 import { updateQuestionOptions } from "./Controllers/question-controller.js";
 
 const PORT = parseInt(
@@ -66,6 +66,7 @@ app.get("/quizzes/info",async(req,res)=>{
   res.status(200).json({messge:'sent data'})
 })
 app.post("/quizzes/firstQuiz", getShopFirstQuiz);
+app.post("/quizzes/quizDetail", quizDetail);
 app.post("/quizzes/answersBaseProductIDS", quizanswersBaseProductIDS);
 app.post("/quizzes/takeCodeAndDisplay", takeCodeAndDisplay);
 

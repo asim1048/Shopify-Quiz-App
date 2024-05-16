@@ -17,14 +17,16 @@ function displayProducts(products){
 }
 
 
-function fetchQuestions(shopId) {
-    shopID=shopId;
-    fetch(`${location.origin}/apps/proxy-1/firstQuiz?shop=${Shopify.shop}`, {
+function fetchQuestions(shopId,quizId) {
+    if(!quizId){
+        return;
+    }
+    fetch(`${location.origin}/apps/proxy-1/quizDetail?shop=${Shopify.shop}`, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ shopID: shopId })
+        body: JSON.stringify({ quizId:quizId })
     })
         .then(response => {
             if (!response.ok) {
