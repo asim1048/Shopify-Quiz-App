@@ -49,7 +49,7 @@ export const addQuizz = async (req, res) => {
         }
 
         // Create quiz and associate question IDs
-        const newQuiz = new Quiz({
+        let newQuiz = new Quiz({
             shopID: data.shopID,
             shopName: data.shopName,
             title: data.quizTitle,
@@ -58,6 +58,14 @@ export const addQuizz = async (req, res) => {
 
         // Save quiz to database
         await newQuiz.save();
+
+        const populatedQuestions = await Promise.all(
+            newQuiz.questions.map(async (questionId) => {
+                return await Question.findById(questionId);
+            })
+        );
+        newQuiz.questions = populatedQuestions;
+
 
         let ress = {
             status: true,
@@ -214,3 +222,149 @@ export const quizanswersBaseProductIDS = async (req, res) => {
         return res.status(500).send(ress);
     }
 }
+export const deleteQuiz = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        // Fetch the quiz based on ID
+        const quiz = await Quiz.findById(id);
+
+        if (!quiz) {
+            // If no quiz found, return appropriate response
+            let ress = {
+                status: false,
+                message: "No quiz found for the given ID",
+            };
+            return res.status(404).send(ress);
+        }
+
+        // Delete all questions associated with the quiz
+        await Promise.all(
+            quiz.questions.map(async (questionId) => {
+                return await Question.findByIdAndDelete(questionId);
+            })
+        );
+
+        // Delete the quiz
+        await Quiz.findByIdAndDelete(id);
+
+        let ress = {
+            status: true,
+            message: "Quiz and associated questions deleted successfully",
+        };
+        return res.status(200).send(ress);
+    } catch (error) {
+        let ress = {
+            status: false,
+            message: "Something went wrong in the backend",
+            error: error,
+        };
+        return res.status(500).send(ress);
+    }
+};
+
+export const takeCodeAndDisplay = async (req, res) => {
+    try {
+        const { shopID } = req.body;
+
+        console.log("Cameeeeeeeee",shopID);
+        let ress = {
+            status: true,
+            message: "Quiz fetched successfully",
+            data: "<p>ALLAH o AKBAR</p>"
+        };
+        return res.status(200).send(ress);
+    } catch (error) {
+        console.log(error)
+        let ress = {
+            status: false,
+            message: "Something went wrong in the backend",
+            error: error,
+        };
+        return res.status(500).send(ress);
+    }
+}
+export const updateQuiz = async (req, res) => {
+    try {
+        const { quizID, quizTitle, questions } = req.body;
+        const images = req.files; // Uploaded images
+        let imageIndex = 0;
+
+        // Find and update the quiz title
+        const quiz = await Quiz.findById(quizID);
+        if (!quiz) {
+            return res.status(404).send({ status: false, message: "Quiz not found" });
+        }
+        quiz.title = quizTitle;
+
+        // Create a set of incoming question IDs for easy comparison
+        const incomingQuestionIds = new Set(questions.map(q => q._id));
+
+        // Identify and remove questions that are not in the incoming question list
+        const existingQuestions = await Question.find({ _id: { $in: quiz.questions } });
+        for (const existingQuestion of existingQuestions) {
+            if (!incomingQuestionIds.has(existingQuestion._id.toString())) {
+                // Remove the question from the database
+                await Question.findByIdAndDelete(existingQuestion._id);
+            }
+        }
+
+        // Update or create each question
+        const updatedQuestionIds = [];
+        for (let i = 0; i < questions?.length; i++) {
+            const questionData = questions[i];
+            const options = [];
+
+            for (let j = 0; j < questionData?.options?.length; j++) {
+                const option = questionData.options[j];
+                let imagePath = option?.image;
+
+                // Check if there's a new image for this option
+                if (option?.newImage) {
+                    imagePath = images[imageIndex].path;
+                    imageIndex++;
+                }
+
+                options.push({ id: j.toString(), value: option.value, image: option?.newImage ? imagePath : option.image });
+            }
+
+            // Find and update the question or create a new one if it doesn't exist
+            let question;
+            if (questionData?._id) {
+                question = await Question.findById(questionData?._id);
+                if (question) {
+                    question.title = questionData.title;
+                    question.options = options;
+                    await question.save();
+                } else {
+                    // If the question ID is provided but not found, create a new question
+                    question = new Question({ title: questionData.title, type: questionData.type, options: options });
+                    await question.save();
+                }
+            } else {
+                // If the question is new (no _id), create it
+                question = new Question({ title: questionData.title, type: questionData.type, options: options });
+                await question.save();
+            }
+
+            updatedQuestionIds.push(question._id);
+        }
+
+        // Update the quiz with the new list of questions
+        quiz.questions = updatedQuestionIds;
+        await quiz.save();
+
+        const populatedQuestions = await Promise.all(
+            quiz.questions.map(async (questionId) => {
+                return await Question.findById(questionId);
+            })
+        );
+        quiz.questions = populatedQuestions;
+
+        return res.status(200).send({ status: true, message: "Quiz updated successfully", data: quiz });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ status: false, message: "Something went wrong", error });
+    }
+};

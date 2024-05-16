@@ -12,8 +12,8 @@ import PrivacyWebhookHandlers from "./privacy.js";
 import  Connection  from './Database/db.js';
 
 import QuestionPic from './Middleware/Question.js';
-
-import { addQuizz,shopQuizes,getShopFirstQuiz,quizanswersBaseProductIDS } from './Controllers/quiz-controller.js';
+import { host } from "./host/index.js";
+import { addQuizz,shopQuizes,getShopFirstQuiz,quizanswersBaseProductIDS,deleteQuiz,takeCodeAndDisplay,updateQuiz } from './Controllers/quiz-controller.js';
 import { updateQuestionOptions } from "./Controllers/question-controller.js";
 
 const PORT = parseInt(
@@ -67,12 +67,23 @@ app.get("/quizzes/info",async(req,res)=>{
 })
 app.post("/quizzes/firstQuiz", getShopFirstQuiz);
 app.post("/quizzes/answersBaseProductIDS", quizanswersBaseProductIDS);
+app.post("/quizzes/takeCodeAndDisplay", takeCodeAndDisplay);
 
 
 app.post('/api/quiz/addQuizz', QuestionPic.array('images'), addQuizz);
+app.post('/api/quiz/updateQuiz', QuestionPic.array('images'), updateQuiz);
 app.post('/api/quiz/shopQuizes', shopQuizes);
 app.post('/api/quiz/getShopFirstQuiz', getShopFirstQuiz);
 app.post('/api/quiz/updateQuestionOptions', updateQuestionOptions);
+app.post('/api/quiz/deleteQuiz', deleteQuiz);
+app.get('/api/quiz/getHost',async(req,res)=>{
+  let ress = {
+    status: true,
+    message: "Quiz fetched successfully",
+    data: `${host}:${PORT}`
+};
+return res.status(200).send(ress);
+} );
 
 //Read Store/Shop info
 app.get("/api/store/info", async(_req,res)=>{

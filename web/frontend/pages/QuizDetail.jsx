@@ -43,11 +43,11 @@ function MyApp() {
     }
     return null;
   };
-  
+
   const formattedSelectedProducts = selectedProducts.map(productId => ({ id: `gid://shopify/Product/${productId}` }));
 
-  const updateQuestion=async(question)=>{
-    
+  const updateQuestion = async (question) => {
+
     try {
       const request = await fetch("/api/quiz/updateQuestionOptions", {
         method: 'POST',
@@ -59,13 +59,13 @@ function MyApp() {
           options: question?.options
         })
       });
-    
+
       const response = await request.json();
-      
+
     } catch (error) {
       console.error(error);
     }
-    
+
   }
 
   return (
@@ -90,13 +90,16 @@ function MyApp() {
           flexDirection: 'column',
           margin: '10px 20%',
         }}>
-          <h2 style={{ marginBottom: '20px', fontSize: '24px', fontWeight: 'bold', color: 'white' }}>{singleQuizDetail.title}</h2>
+          <h2 style={{ marginBottom: '20px', fontSize: '24px', fontWeight: 'bold', color: 'white', textAlign: 'center' }}>{singleQuizDetail.title}</h2>
+          <h4 style={{ marginBottom: '20px', fontSize: '20px', fontWeight: '600', color: 'white', textAlign: 'center' }}>Question & answers <a style={{ fontWeight: '500' }}>( Click on answer text to link products )</a>
+          </h4>
+
           {/* Render questions */}
           {singleQuizDetail?.questions.map((question) => {
             if (question.type !== "SimpleInputFields" && question.options) {
               return (
                 <div style={{ marginBottom: '20px' }} >
-                  <h4 style={{ marginBottom: '10px', fontSize: '18px', fontWeight: 'bold', color: 'white' }}>{question.title}</h4>
+                  <h4 style={{ marginBottom: '10px', fontSize: '16px', fontWeight: 'bold', color: 'white' }}>{question.title}</h4>
                   {/* Render options based on question type */}
                   {renderOptions(question)}
                 </div>
@@ -116,7 +119,7 @@ function MyApp() {
               onSelection={(res) => {
                 let selectedIds = res.selection.map(item => item.id);
                 selectedIds = selectedIds.map(url => url.split('/').pop());
-                
+
                 const updatedOptions = selectedQuestion.options.map(option => {
                   if (option.id === selectedOptionID) {
                     return {
@@ -140,7 +143,7 @@ function MyApp() {
                 );
 
                 //console.log('updatedQuestion',updatedQuestion)
-                
+
                 updateQuestion(updatedQuestion);
 
                 setQuizes(updatedQuizes);

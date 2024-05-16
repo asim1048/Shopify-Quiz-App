@@ -19,7 +19,6 @@ function displayProducts(products){
 
 function fetchQuestions(shopId) {
     shopID=shopId;
-    console.log(Shopify)
     fetch(`${location.origin}/apps/proxy-1/firstQuiz?shop=${Shopify.shop}`, {
         method: 'POST',
         headers: {

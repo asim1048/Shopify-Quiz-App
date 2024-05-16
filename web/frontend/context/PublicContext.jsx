@@ -8,6 +8,7 @@ const PublicContextProvider = ({ children }) => {
 
     const [storeinfo, setStoreInfo] = useState({});
     const [quizes, setQuizes] = useState([]);
+    const [backendURL, setBackendUrl] = useState('');
     const [singleQuizDetail, setSingleQuizDetail] = useState({});
 
     useEffect(() => {
@@ -40,8 +41,21 @@ const PublicContextProvider = ({ children }) => {
             console.error(error);
           }
         }
+        const getHostURL = async (id) => {
+          try {
+            const request = await fetch("/api/quiz/getHost", {
+              method: 'GET',
+            });
+    
+            const response = await request.json();
+            setBackendUrl(response?.data);
+          } catch (error) {
+            console.error(error);
+          }
+        }
         
         fetchStoreInfo()
+        getHostURL()
       }, []);
     
 
@@ -50,7 +64,8 @@ const PublicContextProvider = ({ children }) => {
             quizes,
             setQuizes,
             singleQuizDetail,
-            setSingleQuizDetail
+            setSingleQuizDetail,
+            backendURL
         }}>
             {children}
         </PublicContext.Provider>

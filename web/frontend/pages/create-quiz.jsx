@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 
 import { TextField, Button, Modal, Text } from "@shopify/polaris";
 //import { useAuthenticatedFetch } from "../hooks";
 import { useAuthenticatedFetch } from '@shopify/app-bridge-react';
 
+import { PublicContext } from '../context/PublicContext'
 
 import { questionsType } from "../data/data";
 import Header from "../components/Header";
@@ -15,6 +16,8 @@ import RadioButtonQuestion from "../components/Questions/RadioButtonQuestion";
 
 const Index = () => {
   let fetch = useAuthenticatedFetch();
+  const {setQuizes}=useContext(PublicContext)
+
 
   const navigate = useNavigate();
 
@@ -135,6 +138,8 @@ const Index = () => {
       //console.log(response);
       if (response.status) {
         navigate("/");
+        setQuizes(prevQuizes => [...prevQuizes, response.data]);
+
       }
       else {
         alert(response?.message)
