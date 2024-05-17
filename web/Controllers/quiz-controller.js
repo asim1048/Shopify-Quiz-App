@@ -1,5 +1,7 @@
 import Question from "../Models/question.js";
 import Quiz from '../Models/quiz.js'
+import Quizsubmission from "../Models/quizsubmission.js";
+
 import {host} from '../host/index.js'
 export const addQuizz = async (req, res) => {
     try {
@@ -212,11 +214,17 @@ export const quizDetail = async (req, res) => {
 
 export const quizanswersBaseProductIDS = async (req, res) => {
     try {
-        const { shopID,QuizID,selectedOptions } = req.body;
-        const PORT = parseInt(
-            process.env.BACKEND_PORT || process.env.PORT || "3000",
-            10
-        );
+        const { shopID,QuizID,selectedOptions,qna } = req.body;
+        
+        // Create Submission of Quiz
+        const newQuizSubmissiin = new Quizsubmission({
+            shopID: shopID,
+            quizID: QuizID,
+            qna: qna
+        });
+
+        await newQuizSubmissiin.save();
+
 
         // Fetch the first quiz based on shopID
         const quiz = await Quiz.findById( QuizID );

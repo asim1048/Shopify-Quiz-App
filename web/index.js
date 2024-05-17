@@ -15,6 +15,7 @@ import QuestionPic from './Middleware/Question.js';
 import { host } from "./host/index.js";
 import { addQuizz,shopQuizes,quizDetail,getShopFirstQuiz,quizanswersBaseProductIDS,deleteQuiz,takeCodeAndDisplay,updateQuiz } from './Controllers/quiz-controller.js';
 import { updateQuestionOptions } from "./Controllers/question-controller.js";
+import { shopQuizSubmissions } from "./Controllers/quizsubmission-controller.js";
 
 const PORT = parseInt(
   process.env.BACKEND_PORT || process.env.PORT || "3000",
@@ -77,6 +78,8 @@ app.post('/api/quiz/shopQuizes', shopQuizes);
 app.post('/api/quiz/getShopFirstQuiz', getShopFirstQuiz);
 app.post('/api/quiz/updateQuestionOptions', updateQuestionOptions);
 app.post('/api/quiz/deleteQuiz', deleteQuiz);
+app.post('/api/quiz/shopQuizSubmissions', shopQuizSubmissions);
+
 app.get('/api/quiz/getHost',async(req,res)=>{
   let ress = {
     status: true,

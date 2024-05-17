@@ -61,6 +61,7 @@ const PublicContextProvider = ({ children }) => {
 
     return (
         <PublicContext.Provider value={{
+          storeinfo,
             quizes,
             setQuizes,
             singleQuizDetail,

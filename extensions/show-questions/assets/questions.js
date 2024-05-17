@@ -11,6 +11,7 @@ let shopID;
 let QuizID;
 let selectedProductIDS=[] 
 let productss=[]
+let qna=[]
 
 function displayProducts(products){
     productss=products;
@@ -41,6 +42,7 @@ function fetchQuestions(quizId) {
             if (data && data.data.questions) {
                 host = data.host;
                 QuizID=data.data._id;
+                shopID=data.data.shopID;
                 const questions = data.data.questions;
                 questionsArray = questions; // Store questions in the array
                 totalQuestions = questions.length;
@@ -67,7 +69,7 @@ function displayQuizTitle(title) {
     }
 }
 // Function to toggle option selection
-function toggleOptionSelection(value, questionId) {
+function toggleOptionSelection(value, questionId, inputFieldValue = null) {
     const currentQuestion = questionsArray[currentQuestionIndex];
 
     // Check if this option is already selected
@@ -95,6 +97,12 @@ function toggleOptionSelection(value, questionId) {
             }
         });
     }
+
+    if (currentQuestion.type === 'SimpleInputFields') {
+        // Push the title and value to the qna array
+        qna.push({ title: currentQuestion.title, value: inputFieldValue });
+    }
+
     console.log("selectedOptions",selectedOptions)
 }
 
@@ -251,6 +259,19 @@ function displayStepProgressBar() {
 
 
 function nextQuestion() {
+    const currentQuestion = questionsArray[currentQuestionIndex];
+
+    if (currentQuestion.type === 'SimpleInputFields') {
+        // Get the input field value
+        const inputElement = document.querySelector('input[type="text"]');
+        const inputFieldValue = inputElement.value;
+        toggleOptionSelection(null, currentQuestion._id, inputFieldValue);
+    } else {
+        // For other question types, simply call toggleOptionSelection without inputFieldValue
+        toggleOptionSelection();
+    }
+
+
     if (totalQuestions - 1 > currentQuestionIndex) {
         currentQuestionIndex++;
         displayQuestion(questionsArray[currentQuestionIndex]); // Display next question
@@ -265,7 +286,7 @@ function nextQuestion() {
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ shopID: shopID,QuizID:QuizID,selectedOptions:selectedOptions })
+        body: JSON.stringify({ shopID: shopID,QuizID:QuizID,selectedOptions:selectedOptions,qna:qna })
     })
         .then(response => {
             if (!response.ok) {
