@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Text, DataTable,Button } from "@shopify/polaris";
+import { Text, DataTable, Button, Modal, TextField } from "@shopify/polaris";
 import Header from "../components/Header";
 import { useNavigate } from 'react-router-dom';
 
@@ -13,12 +13,15 @@ import EditQuiz from "./EditQuiz";
 
 const Index = () => {
   let fetch = useAuthenticatedFetch();
-  const {quizes,setQuizes,setSingleQuizDetail}=useContext(PublicContext)
+  const { quizes, setQuizes, singleQuizDetail, setSingleQuizDetail } = useContext(PublicContext)
+
+  const [showPublishModal, setPublishModal] = useState(false);
+
 
   const navigate = useNavigate();
   // console.log("firstQuiz",firstQuiz)
 
-  
+
 
   const onPress = () => {
     navigate("/create-quiz");
@@ -27,15 +30,19 @@ const Index = () => {
 
   const productRecommendation = (quiz) => {
     setSingleQuizDetail(quiz)
-        navigate("/QuizDetail");
+    navigate("/QuizDetail");
 
+  };
+  const publishQUiz = (quiz) => {
+    setSingleQuizDetail(quiz)
+    setPublishModal(true)
   };
   const editQuiz = (quiz) => {
     setSingleQuizDetail(quiz)
-        navigate("/EditQuiz");
+    navigate("/EditQuiz");
 
   };
-  const deleteQuiz = async(quiz) => {
+  const deleteQuiz = async (quiz) => {
     try {
       const request = await fetch("/api/quiz/deleteQuiz", {
         method: 'POST',
@@ -46,14 +53,14 @@ const Index = () => {
           id: quiz?._id,
         })
       });
-    
+
       const response = await request.json();
-      if(response.status){
+      if (response.status) {
 
         setQuizes(prevQuizes => prevQuizes.filter(q => q._id != quiz._id));
-       
+
       }
-      
+
     } catch (error) {
       console.error(error);
     }
@@ -63,26 +70,28 @@ const Index = () => {
   const rows = quizes.flatMap(quiz => {
     // Create an array to store rows for each quiz
     const quizRows = quiz.questions.map((question, index) => {
-        // For the first question in the quiz, include the quiz name and detail button
-        const quizName = index === 0 ? quiz.title : '';
-        const detailButton = index === 0 ? <Button primary onClick={() => productRecommendation(quiz)}>Product Recommendations</Button> : null;
-        const editButton = index === 0 ? <Button variant="monochromePlain" onClick={() => editQuiz(quiz)}>Edit</Button> : null;
-        const deleteButton = index === 0 ? <Button variant="monochromePlain" onClick={() => deleteQuiz(quiz)}>Delete</Button> : null;
+      // For the first question in the quiz, include the quiz name and detail button
+      const quizName = index === 0 ? quiz.title : '';
+      const detailButton = index === 0 ? <Button primary onClick={() => productRecommendation(quiz)}>Product Recommendations</Button> : null;
+      const publishButton = index === 0 ? <Button variant="monochromePlain" onClick={() => publishQUiz(quiz)}>Publish</Button> : null;
+      const editButton = index === 0 ? <Button variant="monochromePlain" onClick={() => editQuiz(quiz)}>Edit</Button> : null;
+      const deleteButton = index === 0 ? <Button variant="monochromePlain" onClick={() => deleteQuiz(quiz)}>Delete</Button> : null;
 
-        return [
-            quizName, // Quiz name (empty string for subsequent questions in the same quiz)
-            question.title, // Question title
-            question.type, // Question type
-            < div style={{display:'flex',gap:'5px'}}>
-                {detailButton}
-                {editButton}
-                {deleteButton}
-            </div> // Detail and Delete buttons (only for the first question)
-        ];
+      return [
+        quizName, // Quiz name (empty string for subsequent questions in the same quiz)
+        question.title, // Question title
+        question.type, // Question type
+        < div style={{ display: 'flex', gap: '5px' }}>
+          {detailButton}
+          {publishButton}
+          {editButton}
+          {deleteButton}
+        </div> // Detail and Delete buttons (only for the first question)
+      ];
     });
 
     return quizRows;
-});
+  });
 
 
   const headings = ['Quiz Name', 'Question Title', 'Question Type', "Actions"];
@@ -107,7 +116,7 @@ const Index = () => {
         <div style={{
           display: 'flex',
           flexDirection: 'column',
-          margin: '10px 10%',
+          margin: '10px 8%',
         }}>
           <Text alignment="center" variant="heading4xl" as="h3">Quizes</Text>
           <div style={{ marginTop: '10px' }}></div>
@@ -118,12 +127,29 @@ const Index = () => {
           />
         </div>
       </div>
-      {/* {firstQuiz?.questions?.length>0 && (
-      <img
-      src={`${host}/${firstQuiz?.questions[1].options[3]?.image}`} 
-      style={{height:'300px', width:'400px', borderRadius:"10px"}}
-      />
-    )} */}
+
+
+      <Modal
+        open={showPublishModal}
+        onClose={() => setPublishModal(false)}
+        title={`Publishing ${singleQuizDetail?.title} Quiz`}
+      >
+        <Modal.Section style={{ flexDirection: "column" }}>
+          <p>Copy the Quiz ID and paste where you want to add in store front.</p>
+          <div style={{ display: "flex", marginTop:'10px',gap:'10px',flexDirection:'column' }}>
+            <TextField
+              value={singleQuizDetail?._id}
+              readOnly
+            />
+            <Button onClick={()=>{
+               navigator.clipboard.writeText(singleQuizDetail?._id).then(() => {
+                // Optionally, provide feedback to the user that the text was copied
+              });
+            
+            }}>Copy Quiz ID</Button>
+          </div>
+        </Modal.Section>
+      </Modal>
 
     </div>
   );

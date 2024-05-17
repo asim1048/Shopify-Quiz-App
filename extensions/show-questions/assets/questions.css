@@ -20,7 +20,9 @@
 }
 
 .question-container {
-   color: black
+   color: black;
+
+   
 }
 
 .question {
@@ -35,19 +37,22 @@
 
 .option-item {
    flex: 0 0 calc(20.33% - 20px);
+   padding: 10px;
+
+   border-radius: 10px;
    /* Adjust width as needed */
    margin: 0 10px 20px 0;
    text-align: center;
    cursor: pointer;
+   border-width: 0.5px;
+   border-style: solid;
+   color:transparent;
 }
 
 .option-item img {
-   display: block;
-   margin: 0 auto 10px;
-   /* Center image */
    height: 150px;
    width: 150px;
-   border-radius: 5px
+   border-radius: 5px;
 }
 
 
@@ -55,30 +60,28 @@
    display: block;
 }
 .option-item.selected {
-   padding: 10px;
-   border-radius: 10px;
-   border: 0.5px solid #18584B; /* Border color for selected options */
-   box-shadow: 0px 0px 3px #18584B; /* Box shadow for selected options */
+   border-color:  #1a004c; 
 }
 
 
 /* Style for the next button */
-button {
-   margin-top: 15px;
-   padding: 10px 20px;
-   background-color: #18584B;
-   color: white;
-   font-size: 18px;
-   font-weight: bold;
-   width: 130px;
-   border-radius: 8px;
-   border: none;
-   letter-spacing: 2px;
-   cursor: pointer;
+.next-button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #1a004c;
+  color: white;
+  font-size: 18px;
+  display: none; /* Initially hidden */
+  font-weight: bold;
+  width: 130px;
+  border-radius: 8px;
+  border: none;
+  letter-spacing: 2px;
+  cursor: pointer;
 }
 
-button:hover {
-   background-color: #39a791;
+.next-button:hover {
+  background-color: #311a5e;
 }
 
 .stepper-wrapper {
@@ -138,13 +141,13 @@ button:hover {
  }
  
  .stepper-item.completed .step-counter {
-   background-color: #4bb543;
+   background-color: #4ea393   ;
  }
  
  .stepper-item.completed::after {
    position: absolute;
    content: "";
-   border-bottom: 2px solid #4bb543;
+   border-bottom: 2px solid #4ea393   ;
    width: 100%;
    top: 20px;
    left: 50%;
@@ -162,3 +165,44 @@ button:hover {
    flex-wrap: wrap;
    gap: 50px;
  }
+
+ .product-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 10px;
+  width: 250px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.product-image {
+  width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.product-title {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.product-price {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.add-to-cart-button {
+  background-color: transparent;
+  border: 1px solid #18584B;
+  color: #18584B;
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s ease;
+}
+
+.add-to-cart-button:hover {
+  background-color: #18584B;
+  color: #fff;
+}

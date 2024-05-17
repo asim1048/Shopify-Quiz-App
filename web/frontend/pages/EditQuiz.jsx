@@ -19,25 +19,25 @@ function EditQuiz() {
   let fetch = useAuthenticatedFetch();
 
 
-  const { singleQuizDetail, setSingleQuizDetail, quizes, setQuizes,backendURL } = useContext(PublicContext);
+  const { singleQuizDetail, setSingleQuizDetail, quizes, setQuizes, backendURL } = useContext(PublicContext);
 
   const [openQuestionModal, setQuestionModal] = useState(false);
 
-  
+
   const [quizTitle, setQuizTitle] = useState("");
   const [questions, setQuestions] = useState([]);
 
-  useEffect(()=>{
-    const loadData=()=>{
-      if(singleQuizDetail.title){
+  useEffect(() => {
+    const loadData = () => {
+      if (singleQuizDetail.title) {
         setQuizTitle(singleQuizDetail.title)
       }
-      if(singleQuizDetail?.questions){
+      if (singleQuizDetail?.questions) {
         setQuestions(singleQuizDetail?.questions)
       }
     }
     loadData()
-  },[singleQuizDetail])
+  }, [singleQuizDetail])
 
 
   const onPress = () => {
@@ -47,7 +47,7 @@ function EditQuiz() {
   const renderQuestionComponent = (question, index) => {
     switch (question.type) {
       case "SingleSelect":
-        return <SingleSelectQuestion question={question} setQuestions={setQuestions} index={index} backendURL={backendURL}  />;
+        return <SingleSelectQuestion question={question} setQuestions={setQuestions} index={index} backendURL={backendURL} />;
       case "MultiSelect":
         return <MultiSelectQuestion question={question} setQuestions={setQuestions} index={index} backendURL={backendURL} />;
       case "SimpleInputFields":
@@ -66,10 +66,10 @@ function EditQuiz() {
     });
   };
 
-  
 
 
-   const handleQuestionTypeSelection = (question) => {
+
+  const handleQuestionTypeSelection = (question) => {
 
     if (question.shortForm == "SingleSelect") {
       // Add single select question to the singleSelectQuestions state
@@ -185,7 +185,7 @@ function EditQuiz() {
 
 
       questions.forEach((question, index) => {
-        if(question?._id){
+        if (question?._id) {
 
           formData.append(`questions[${index}][_id]`, question._id);
         }
@@ -196,14 +196,18 @@ function EditQuiz() {
         question.options.forEach((option, optionIndex) => {
           formData.append(`questions[${index}][options][${optionIndex}][value]`, option.value);
           if (option.newImage) {
-            if(question.type=="SingleSelect" || question.type=="MultiSelect"){
-            formData.append('images', option.image);
-            formData.append(`questions[${index}][options][${optionIndex}][newImage]`, true);
+            if (question.type == "SingleSelect" || question.type == "MultiSelect") {
+              formData.append('images', option.image);
+              formData.append(`questions[${index}][options][${optionIndex}][newImage]`, true);
             }
           }
-          else{
+          else {
             formData.append(`questions[${index}][options][${optionIndex}][image]`, option.image);
           }
+          // Append Products array
+          option?.Products?.forEach((product, productIndex) => {
+            formData.append(`questions[${index}][options][${optionIndex}][Products][${productIndex}]`, product);
+          });
         });
       });
 
@@ -250,7 +254,7 @@ function EditQuiz() {
           flexDirection: 'column',
           margin: '30px 20%',
         }}>
-            <div>
+          <div>
             <Text variant="bodyLg" as="h3">Quiz Title</Text>
             <TextField
               value={quizTitle}
@@ -258,24 +262,24 @@ function EditQuiz() {
               onChange={(newValue) => setQuizTitle(newValue)}
             />
             {/* Render the questions */}
-          {questions.map((question, index) => (
-            <div key={index}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '3px' }}>
-                <Text variant="headingMd" as="h3">Question {index + 1}</Text>
-                <Button variant="secondary" style={{ verticalAlign: 'middle' }} onClick={() => deleteQuestion(index)}>❌</Button>
+            {questions.map((question, index) => (
+              <div key={index}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '3px' }}>
+                  <Text variant="headingMd" as="h3">Question {index + 1}</Text>
+                  <Button variant="secondary" style={{ verticalAlign: 'middle' }} onClick={() => deleteQuestion(index)}>❌</Button>
 
+                </div>
+                {renderQuestionComponent(question, index)}
               </div>
-              {renderQuestionComponent(question, index)}
-            </div>
-          ))}
-          
+            ))}
+
           </div>
 
 
-          <Button primary onClick={()=>updateQuiz()}>
+          <Button primary onClick={() => updateQuiz()}>
             SAVE
           </Button>
-          <div style={{marginTop:'10px'}}></div>
+          <div style={{ marginTop: '10px' }}></div>
           <Button primary onClick={() => setQuestionModal(true)}>
             Add A Question
           </Button>

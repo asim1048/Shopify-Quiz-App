@@ -1,11 +1,14 @@
 <div class="app-form">
-    <h1 style="display: none;>{{ block.settings.quiz_id }}</h1>
+<h1 style="display: none;" data-quiz-id="{{ block.settings.quizid }}"></h1>
     <h2 style="display: none;">{{ shop.id }}</h2> <!-- Hide the shop ID -->
     <h2 class="quiz-title"></h2>
     <div class="stepper-wrapper"></div> <!-- Add the stepper-wrapper here -->
     <div class="question-container"></div>
-    <button id="next-button" onclick="nextQuestion()">NEXT</button>
+<button class="next-button" onclick="nextQuestion()">NEXT</button>
     
+</div>
+
+<div class="result-list">
 </div>
 
 <div class="product-list" style="display: none;"> <!-- Hide the product list initially -->
@@ -27,15 +30,14 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const shopIdElement = document.querySelector('.app-form h2');
-        const shopId = shopIdElement.textContent.trim();
+       
+
+          const quizIdElement = document.querySelector('[data-quiz-id]');
+    const quizId = quizIdElement ? quizIdElement.getAttribute('data-quiz-id') : null;
 
 
-        const quidIdElement = document.querySelector('.app-form h1');
-        const quizId = quidIdElement.textContent.trim();
 
-
-        fetchQuestions(shopId,quizId); // Pass the shop ID to fetchQuestions function
+        fetchQuestions(quizId); // Pass the shop ID to fetchQuestions function
 
         
 
@@ -62,7 +64,7 @@
 
    {% schema %}
        {
-          "name": "Showing Questions",
+          "name": "Add Quiz",
           "target": "section",
           "class": "app-dashboard-app",
           "stylesheet": "questions.css",
@@ -70,7 +72,7 @@
           "settings": [
            {
               "label": "Enter Quiz ID",
-              "id": "quiz_id",
+              "id": "quizid",
               "type": "text"
            } 
           ]

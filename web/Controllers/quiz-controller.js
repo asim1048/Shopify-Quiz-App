@@ -339,7 +339,7 @@ export const updateQuiz = async (req, res) => {
         // Find and update the quiz title
         const quiz = await Quiz.findById(quizID);
         if (!quiz) {
-            return res.status(404).send({ status: false, message: "Quiz not found" });
+            return res.status(200).send({ status: false, message: "Quiz not found" });
         }
         quiz.title = quizTitle;
 
@@ -371,7 +371,7 @@ export const updateQuiz = async (req, res) => {
                     imageIndex++;
                 }
 
-                options.push({ id: j.toString(), value: option.value, image: option?.newImage ? imagePath : option.image });
+                options.push({ id: j.toString(), value: option.value, image: option?.newImage ? imagePath : option.image, Products:option?.Products });
             }
 
             // Find and update the question or create a new one if it doesn't exist

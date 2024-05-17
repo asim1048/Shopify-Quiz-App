@@ -17,18 +17,20 @@ function displayProducts(products){
 }
 
 
-function fetchQuestions(shopId,quizId) {
+function fetchQuestions(quizId) {
     if(!quizId){
         return;
     }
+    console.log("quizId from function",quizId)
     fetch(`${location.origin}/apps/proxy-1/quizDetail?shop=${Shopify.shop}`, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ quizId:quizId })
+        body: JSON.stringify({ quizId:quizId.toString() })
     })
         .then(response => {
+            console.log("response",response)
             if (!response.ok) {
                 throw new Error('Failed to fetch questions');
             }
@@ -45,6 +47,12 @@ function fetchQuestions(shopId,quizId) {
                 displayStepProgressBar(); // Display the initial step progress bar
                 displayQuestion(questions[currentQuestionIndex]); // Display the first question
                 displayQuizTitle(data.data.title); // Display the quiz title
+
+                  // Show the next button now that questions have been loaded
+                  const nextButton = document.querySelector('.next-button');
+                  if (nextButton) {
+                      nextButton.style.display = 'block'; // Make the button visible
+                  }
             }
         })
         .catch(error => {
@@ -280,40 +288,91 @@ function nextQuestion() {
     //FIlter the products based on the selectedProductIDS array for  products and the display
 }
 function displayProductsAfterFiltering() {
-
     // Filter products based on selectedProductIDS
     const filteredProducts = productss.filter(product => selectedProductIDS.includes(product.id));
+
+    // Show the next button now that questions have been loaded
+    const nextButton = document.querySelector('.next-button');
+    if (nextButton) {
+        nextButton.style.display = 'none'; // Hide the next button
+    }
+    const quizTitle = document.querySelector('.quiz-title');
+    if (quizTitle) {
+        quizTitle.style.display = 'none'; // Hide the quiz title
+    }
+    const questionContainer = document.querySelector('.question-container');
+    if (questionContainer) {
+        questionContainer.style.display = 'none'; // Hide the question container
+    }
+    const stepperWrapper = document.querySelector('.stepper-wrapper');
+    if (stepperWrapper) {
+        stepperWrapper.style.display = 'none'; // Hide the stepper wrapper
+    }
 
     // Clear existing content in product-list
     const productListContainer = document.querySelector('.product-list-filtered');
     productListContainer.innerHTML = '';
 
-    console.log("filteredProducts",filteredProducts)
+    // Clear existing content in result-list
+    const resultListContainer = document.querySelector('.result-list');
+    resultListContainer.innerHTML = '';
 
-    // Display filtered products
-    filteredProducts.forEach(product => {
-        const productElement = document.createElement('div');
-        productElement.classList.add('product');
+    // Display "Results" heading and "No products found" message
+    const resultsContainer = document.createElement('div');
+    resultsContainer.classList.add('results-container');
+    resultsContainer.style.textAlign = 'center'; // Center align content
+    resultListContainer.appendChild(resultsContainer);
 
-        const imageElement = document.createElement('img');
-        imageElement.src = product.imageUrl;
-        imageElement.alt = product.title;
+    const resultsHeading = document.createElement('h2');
+    resultsHeading.textContent = 'Results';
+    resultsHeading.style.marginBottom = '10px'; // Add some space below the heading
+    resultsContainer.appendChild(resultsHeading);
 
-        const titleElement = document.createElement('h2');
-        titleElement.textContent = product.title;
+    if (filteredProducts.length > 0) {
+        // Display filtered products
+        const contentContainer = document.createElement('div');
+        contentContainer.classList.add('content-container');
+        contentContainer.style.display = 'flex';
+        contentContainer.style.flexWrap = 'wrap';
+        contentContainer.style.justifyContent = 'center'; // Center content horizontally
+        resultListContainer.appendChild(contentContainer);
 
-        const priceElement = document.createElement('p');
-        priceElement.textContent = product.price;
+        filteredProducts.forEach(product => {
+            const productCard = document.createElement('div');
+            productCard.classList.add('product-card');
 
-        const viewProductLink = document.createElement('a');
-        viewProductLink.href = product.url;
-        viewProductLink.textContent = 'View Product';
+            const imageElement = document.createElement('img');
+            imageElement.src = product.imageUrl;
+            imageElement.alt = product.title;
+            imageElement.classList.add('product-image');
 
-        productElement.appendChild(imageElement);
-        productElement.appendChild(titleElement);
-        productElement.appendChild(priceElement);
-        productElement.appendChild(viewProductLink);
+            const titleElement = document.createElement('h2');
+            titleElement.textContent = product.title;
+            titleElement.classList.add('product-title');
 
-        productListContainer.appendChild(productElement);
-    });
+            const priceElement = document.createElement('p');
+            priceElement.textContent = product.price;
+            priceElement.classList.add('product-price');
+
+            const addButton = document.createElement('a');
+            addButton.href = product.url;
+            addButton.textContent = 'Add to Cart';
+            addButton.classList.add('add-to-cart-button');
+
+            productCard.appendChild(imageElement);
+            productCard.appendChild(titleElement);
+            productCard.appendChild(priceElement);
+            productCard.appendChild(addButton);
+
+            contentContainer.appendChild(productCard);
+        });
+    } else {
+        // Display "No products found" message
+        const noResultsMessage = document.createElement('p');
+        noResultsMessage.textContent = 'No products match the selected criteria.';
+        resultsContainer.appendChild(noResultsMessage);
+    }
 }
+
+
+
