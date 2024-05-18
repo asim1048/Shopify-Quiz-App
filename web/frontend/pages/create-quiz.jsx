@@ -235,8 +235,15 @@ const Index = () => {
     >
       <Header buttonText={"Submit Quiz"} callBackFunction={onPress} />
       <div style={{
-        display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '100%', borderRadius: '8px', margin: '50px 10%',
-      backgroundColor:'#4c7480'
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        minHeight: '100%',
+        borderRadius: '8px',
+        margin: '50px 10%',
+        backgroundColor:'#4c7480',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        padding: '40px',
       }}>
         <div
           style={{
