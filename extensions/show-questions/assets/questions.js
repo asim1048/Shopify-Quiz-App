@@ -9,29 +9,29 @@ let host = "";
 let selectedOptions = [];
 let shopID;
 let QuizID;
-let selectedProductIDS=[] 
-let productss=[]
-let qna=[]
+let selectedProductIDS = []
+let productss = []
+let qna = []
 
-function displayProducts(products){
-    productss=products;
+function displayProducts(products) {
+    productss = products;
 }
 
 
 function fetchQuestions(quizId) {
-    if(!quizId){
+    if (!quizId) {
         return;
     }
-    console.log("quizId from function",quizId)
+    console.log("quizId from function", quizId)
     fetch(`${location.origin}/apps/proxy-1/quizDetail?shop=${Shopify.shop}`, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ quizId:quizId.toString() })
+        body: JSON.stringify({ quizId: quizId.toString() })
     })
         .then(response => {
-            console.log("response",response)
+            console.log("response", response)
             if (!response.ok) {
                 throw new Error('Failed to fetch questions');
             }
@@ -41,8 +41,8 @@ function fetchQuestions(quizId) {
             // Handle the response data
             if (data && data.data.questions) {
                 host = data.host;
-                QuizID=data.data._id;
-                shopID=data.data.shopID;
+                QuizID = data.data._id;
+                shopID = data.data.shopID;
                 const questions = data.data.questions;
                 questionsArray = questions; // Store questions in the array
                 totalQuestions = questions.length;
@@ -50,11 +50,11 @@ function fetchQuestions(quizId) {
                 displayQuestion(questions[currentQuestionIndex]); // Display the first question
                 displayQuizTitle(data.data.title); // Display the quiz title
 
-                  // Show the next button now that questions have been loaded
-                  const nextButton = document.querySelector('.next-button');
-                  if (nextButton) {
-                      nextButton.style.display = 'block'; // Make the button visible
-                  }
+                // Show the next button now that questions have been loaded
+                const nextButton = document.querySelector('.next-button');
+                if (nextButton) {
+                    nextButton.style.display = 'block'; // Make the button visible
+                }
             }
         })
         .catch(error => {
@@ -89,7 +89,7 @@ function toggleOptionSelection(value, questionId, inputFieldValue = null) {
     }
 
     // If SingleSelect question, remove any other selections
-    if (currentQuestion.type === 'SingleSelect' ||currentQuestion.type == 'radioButton') {
+    if (currentQuestion.type === 'SingleSelect' || currentQuestion.type == 'radioButton') {
         const otherOptions = document.querySelectorAll('.option-item.selected');
         otherOptions.forEach(option => {
             if (option.getAttribute('data-question-id') !== questionId) {
@@ -99,11 +99,11 @@ function toggleOptionSelection(value, questionId, inputFieldValue = null) {
     }
 
     if (currentQuestion.type === 'SimpleInputFields') {
-        // Push the title and value to the qna array
+
         qna.push({ title: currentQuestion.title, value: inputFieldValue });
     }
 
-    console.log("selectedOptions",selectedOptions)
+    console.log("selectedOptions", selectedOptions)
 }
 
 
@@ -120,16 +120,11 @@ function displayQuestion(question) {
     const questionElement = document.createElement('div');
     questionElement.classList.add('question');
 
-    const titleElement = document.createElement('p');
-    titleElement.textContent = question.title;
-    titleElement.style.marginTop = '-10px'; // Set font size
-    titleElement.style.fontSize = '20px'; // Set font size
-    titleElement.style.color = 'black'; // Set text color
-    titleElement.style.fontFamily = 'Arial, sans-serif'; // Set font family
+    const titleElement = document.createElement('h2');
+    titleElement.textContent = question.type != "SimpleInputFields" ? question.title : "";
+    titleElement.classList.add('questionTitle'); // Add a class for styling
 
     questionElement.appendChild(titleElement);
-
-
 
     // Add input field if the question type is input
     if (question.type === 'SimpleInputFields') {
@@ -138,7 +133,7 @@ function displayQuestion(question) {
         inputElement.placeholder = question.title; // Use the title as the placeholder
 
         // Apply CSS styles to the input element
-        inputElement.style.width = '350px'; // Set the width to 100%
+        inputElement.style.width = '500px'; // Set the width to 100%
         inputElement.style.padding = '12px'; // Set padding
         inputElement.style.marginTop = '4px'; // Set margin-top
         inputElement.style.border = '1px solid #ccc'; // Add a border
@@ -149,12 +144,14 @@ function displayQuestion(question) {
         inputElement.style.color = 'black'; // Set text color
         inputElement.style.backgroundColor = '#fff'; // Set background color
 
-
-
-
         questionElement.appendChild(inputElement);
-    }
 
+        // Pre-fill input if it was previously entered
+        const existingAnswer = qna.find(item => item.title === question.title);
+        if (existingAnswer) {
+            inputElement.value = existingAnswer.value;
+        }
+    }
 
     // Add options if the question type is SingleSelect or MultiSelect
     if (question.type === 'SingleSelect' || question.type === 'MultiSelect') {
@@ -166,7 +163,7 @@ function displayQuestion(question) {
             optionItem.classList.add('option-item'); // Add a class for styling
 
             // Check if option is selected
-            const isSelected = selectedOptions.some(option => option.questionId === question._id && option.optionId === option.id);
+            const isSelected = selectedOptions.some(selectedOption => selectedOption.questionId === question._id && selectedOption.value === option.value);
             if (isSelected) {
                 optionItem.classList.add('selected'); // Add selected class
             }
@@ -182,22 +179,22 @@ function displayQuestion(question) {
                 const imageElement = document.createElement('img');
                 imageElement.src = `${host}/${option.image}`; // Assuming 'host' holds the host URL
                 imageElement.alt = option.value; // Use option value as alt text
+
                 optionItem.appendChild(imageElement);
             }
 
             // Add value of option
-            const valueElement = document.createElement('span');
+            const valueElement = document.createElement('p');
             valueElement.textContent = option.value; // Assuming option is an object with 'value' property
-            optionItem.appendChild(valueElement);
+            optionItem.classList.add('optiontitle'); // Add a class for styling
 
-            // Add radio or checkbox input (if needed)
+            optionItem.appendChild(valueElement);
 
             optionsContainer.appendChild(optionItem);
         });
 
         questionElement.appendChild(optionsContainer);
-    }
-    else if (question.type === 'radioButton') { // Adjusted condition for radioButton
+    } else if (question.type === 'radioButton') { // Adjusted condition for radioButton
         question.options.forEach(option => {
             const optionItem = document.createElement('div');
             const radio = document.createElement('input');
@@ -226,6 +223,7 @@ function displayQuestion(question) {
     }
 }
 
+
 // Function to display the step progress bar
 function displayStepProgressBar() {
     const stepperWrapper = document.querySelector('.stepper-wrapper');
@@ -236,21 +234,17 @@ function displayStepProgressBar() {
         for (let i = 0; i < totalQuestions; i++) {
             const stepItem = document.createElement('div');
             stepItem.classList.add('stepper-item');
-            if (i < currentQuestionIndex+1) {
+            if (i < currentQuestionIndex) {
                 stepItem.classList.add('completed');
-            } else if (i === currentQuestionIndex+1) {
+            } else if (i === currentQuestionIndex) {
                 stepItem.classList.add('active');
             }
-            
+
             const stepCounter = document.createElement('div');
             stepCounter.classList.add('step-counter');
-            stepCounter.textContent = i + 1;
+            stepCounter.textContent = i + 1; // Step numbers should start from 1
+            stepCounter.style.color = 'white'; // Ensure the text color is always white
             stepItem.appendChild(stepCounter);
-            
-            const stepName = document.createElement('div');
-            stepName.classList.add('step-name');
-            stepName.textContent = `Step ${i + 1}`;
-            stepItem.appendChild(stepName);
 
             stepperWrapper.appendChild(stepItem);
         }
@@ -258,14 +252,38 @@ function displayStepProgressBar() {
 }
 
 
+function backQuestion() {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        displayQuestion(questionsArray[currentQuestionIndex]); // Display previous question
+        displayStepProgressBar(); // Update step progress bar
+
+        // Handle Back Button visibility
+        if (currentQuestionIndex == 0) {
+            const backButton = document.querySelector('.back-button');
+            if (backButton) {
+                backButton.style.display = 'none'; // Hide the back button if on the first question
+            }
+        }
+    }
+}
+
 function nextQuestion() {
     const currentQuestion = questionsArray[currentQuestionIndex];
+
+
 
     if (currentQuestion.type === 'SimpleInputFields') {
         // Get the input field value
         const inputElement = document.querySelector('input[type="text"]');
         const inputFieldValue = inputElement.value;
-        toggleOptionSelection(null, currentQuestion._id, inputFieldValue);
+        if (!inputFieldValue) {
+            alert(`Please enter the ${currentQuestion?.title}`)
+            return;
+        }
+        else {
+            toggleOptionSelection(null, currentQuestion._id, inputFieldValue);
+        }
     } else {
         // For other question types, simply call toggleOptionSelection without inputFieldValue
         toggleOptionSelection();
@@ -276,33 +294,41 @@ function nextQuestion() {
         currentQuestionIndex++;
         displayQuestion(questionsArray[currentQuestionIndex]); // Display next question
         displayStepProgressBar(); // Update step progress bar
+        //Handle Back Button
+        if (currentQuestionIndex != 0) {
+            const backButton = document.querySelector('.back-button');
+            if (backButton) {
+                backButton.style.display = 'flex'; // Hide the quiz title
+            }
+        }
+
     } else {
         console.log("Submit the code ");
-        console.log("shopID",shopID)
-        console.log("QuizID",QuizID)
+        console.log("shopID", shopID)
+        console.log("QuizID", QuizID)
 
-    fetch(`${location.origin}/apps/proxy-1/answersBaseProductIDS?shop=${Shopify.shop}`, {
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ shopID: shopID,QuizID:QuizID,selectedOptions:selectedOptions,qna:qna })
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch questions');
-            }
-            return response.json();
+        fetch(`${location.origin}/apps/proxy-1/answersBaseProductIDS?shop=${Shopify.shop}`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ shopID: shopID, QuizID: QuizID, selectedOptions: selectedOptions, qna: qna })
         })
-        .then(data => {
-            // Handle the response data
-            console.log("Data",data)
-            selectedProductIDS=data.data;
-            displayProductsAfterFiltering()
-        })
-        .catch(error => {
-            console.error('Error fetching questions:', error);
-        });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch questions');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Handle the response data
+                console.log("Data", data)
+                selectedProductIDS = data.data;
+                displayProductsAfterFiltering()
+            })
+            .catch(error => {
+                console.error('Error fetching questions:', error);
+            });
     }
 
 
@@ -310,12 +336,18 @@ function nextQuestion() {
 }
 function displayProductsAfterFiltering() {
     // Filter products based on selectedProductIDS
+    console.log("productssproductss", productss)
+
     const filteredProducts = productss.filter(product => selectedProductIDS.includes(product.id));
 
     // Show the next button now that questions have been loaded
     const nextButton = document.querySelector('.next-button');
     if (nextButton) {
         nextButton.style.display = 'none'; // Hide the next button
+    }
+    const backButton = document.querySelector('.back-button');
+    if (backButton) {
+        backButton.style.display = 'none'; // Hide the quiz title
     }
     const quizTitle = document.querySelector('.quiz-title');
     if (quizTitle) {
@@ -387,6 +419,29 @@ function displayProductsAfterFiltering() {
 
             contentContainer.appendChild(productCard);
         });
+        if (filteredProducts?.length > 0) {
+            fetch(`${location.origin}/apps/proxy-1/sendResultsEmail?shop=${Shopify.shop}`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email: qna[qna?.length - 1]?.value.trim(), products: filteredProducts })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch questions');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Handle the response data
+                    console.log("Email results", data)
+                })
+                .catch(error => {
+                    console.error('Error sending email:', error);
+                });
+
+        }
     } else {
         // Display "No products found" message
         const noResultsMessage = document.createElement('p');

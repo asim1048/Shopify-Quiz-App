@@ -15,7 +15,7 @@ import QuestionPic from './Middleware/Question.js';
 import { host } from "./host/index.js";
 import { addQuizz,shopQuizes,quizDetail,getShopFirstQuiz,quizanswersBaseProductIDS,deleteQuiz,takeCodeAndDisplay,updateQuiz } from './Controllers/quiz-controller.js';
 import { updateQuestionOptions } from "./Controllers/question-controller.js";
-import { shopQuizSubmissions } from "./Controllers/quizsubmission-controller.js";
+import { shopQuizSubmissions,sendResultsEmail } from "./Controllers/quizsubmission-controller.js";
 
 const PORT = parseInt(
   process.env.BACKEND_PORT || process.env.PORT || "3000",
@@ -69,7 +69,8 @@ app.get("/quizzes/info",async(req,res)=>{
 app.post("/quizzes/firstQuiz", getShopFirstQuiz);
 app.post("/quizzes/quizDetail", quizDetail);
 app.post("/quizzes/answersBaseProductIDS", quizanswersBaseProductIDS);
-app.post("/quizzes/takeCodeAndDisplay", takeCodeAndDisplay);
+app.post("/quizzes/answersBaseProductIDS", quizanswersBaseProductIDS);
+app.post("/quizzes/sendResultsEmail", sendResultsEmail);
 
 
 app.post('/api/quiz/addQuizz', QuestionPic.array('images'), addQuizz);
@@ -84,7 +85,7 @@ app.get('/api/quiz/getHost',async(req,res)=>{
   let ress = {
     status: true,
     message: "Quiz fetched successfully",
-    data: `${host}:${PORT}`
+    data: `${host}`
 };
 return res.status(200).send(ress);
 } );

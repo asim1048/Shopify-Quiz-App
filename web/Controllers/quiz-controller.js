@@ -199,7 +199,7 @@ export const quizDetail = async (req, res) => {
             status: true,
             message: "Quiz fetched successfully",
             data: quiz,
-            host:`${host}:${PORT}`
+            host:`${host}`
         };
         return res.status(200).send(ress);
     } catch (error) {

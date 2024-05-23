@@ -21,46 +21,92 @@
 
 .question-container {
    color: black;
-
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
+   height: 270px;
    
 }
 
 .question {
    color: black;
 }
-
-.options-container {
-   display: flex;
-   flex-wrap: wrap;
-   gap: 30px;
+.questionTitle{
+  font-size: 26px !important;
+  font-weight: 600 !important;
+  text-align: center;
+  color: #363855 !important;
 }
-
+/* Base style for option-item */
 .option-item {
-   flex: 0 0 calc(20.33% - 20px);
-   padding: 10px;
-
-   border-radius: 10px;
-   /* Adjust width as needed */
-   margin: 0 10px 20px 0;
-   text-align: center;
-   cursor: pointer;
-   border-width: 0.5px;
-   border-style: solid;
-   color:transparent;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  cursor: pointer;
+  padding: 4px;
+  border-width: 3px;
+  border-style: solid;
+  border-color: transparent; /* Use transparent instead of transparent !important */
+  transition: border-color 0.3s; /* Smooth transition for border color */
 }
 
+/* Style for the image within option-item */
 .option-item img {
-   height: 150px;
-   width: 150px;
-   border-radius: 5px;
+  height: 130px;
+  width: 130px;
+  border-radius: 0px;
 }
 
-
-.option-item span {
-   display: block;
+/* Style for the option title */
+.optiontitle {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 800;
+  margin-top: -10px;
+  padding: 0;
 }
+
+/* Style for the selected state */
 .option-item.selected {
-   border-color:  #1a004c; 
+  border-color: navy !important; /* Ensure it overrides other styles */
+}
+
+/* Container for options */
+.options-container {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  gap: 10px;
+}
+
+.con-button{
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.back-button {
+  display: flex;               /* Make the button a flex container */
+  justify-content: center;     /* Center the content horizontally */
+  align-items: center;         /* Center the content vertically */
+  margin-top: 15px;
+  padding: 10px 30px;
+  background-color: #8b0031;
+  color: white;
+  font-size: 18px;
+  text-align: center;          /* Ensure text alignment */
+  font-weight: bold;
+  width: 130px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  display: none;               /* Initially hidden */
+}
+
+.back-button:hover {
+  background-color: navy;
 }
 
 
@@ -68,98 +114,106 @@
 .next-button {
   margin-top: 15px;
   padding: 10px 20px;
-  background-color: #1a004c;
+  background-color: #8b0031;
   color: white;
   font-size: 18px;
+  text-align: center;
   display: none; /* Initially hidden */
   font-weight: bold;
   width: 130px;
   border-radius: 8px;
   border: none;
-  letter-spacing: 2px;
   cursor: pointer;
 }
 
 .next-button:hover {
-  background-color: #311a5e;
+  background-color: navy;
 }
 
 .stepper-wrapper {
-   margin-top: auto;
-   width: 100%;
-   display: flex;
-   justify-content: space-between;
-   margin-bottom: 20px;
- }
- .stepper-item {
-   position: relative;
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   flex: 1;
- 
-   @media (max-width: 768px) {
-     font-size: 12px;
-   }
- }
- 
- .stepper-item::before {
-   position: absolute;
-   content: "";
-   border-bottom: 2px solid #ccc;
-   width: 100%;
-   top: 20px;
-   left: -50%;
-   z-index: 2;
- }
- 
- .stepper-item::after {
-   position: absolute;
-   content: "";
-   border-bottom: 2px solid #ccc;
-   width: 100%;
-   top: 20px;
-   left: 50%;
-   z-index: 2;
- }
- 
- .stepper-item .step-counter {
-   position: relative;
-   z-index: 5;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   width: 40px;
-   height: 40px;
-   border-radius: 50%;
-   background: #ccc;
-   margin-bottom: 6px;
- }
- 
- .stepper-item.active {
-   font-weight: bold;
- }
- 
- .stepper-item.completed .step-counter {
-   background-color: #4ea393   ;
- }
- 
- .stepper-item.completed::after {
-   position: absolute;
-   content: "";
-   border-bottom: 2px solid #4ea393   ;
-   width: 100%;
-   top: 20px;
-   left: 50%;
-   z-index: 3;
- }
- 
- .stepper-item:first-child::before {
-   content: none;
- }
- .stepper-item:last-child::after {
-   content: none;
- }
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.stepper-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+
+  @media (max-width: 768px) {
+    font-size: 12px;
+  }
+}
+
+.stepper-item::before {
+  position: absolute;
+  content: "";
+  border-bottom: 4px solid #ccc;
+  width: 100%;
+  color: white;
+  top: 20px;
+  left: -50%;
+  z-index: 2;
+}
+
+.stepper-item::after {
+  position: absolute;
+  content: "";
+  border-bottom: 4px solid #ccc;
+  width: 100%;
+  color: white;
+  top: 20px;
+  left: 50%;
+  z-index: 2;
+}
+
+.stepper-item .step-counter {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #c88ba1;
+  margin-bottom: 6px;
+  color: white; /* Ensure the text color is always white */
+}
+
+.stepper-item.active {
+  font-weight: bold;
+  color: white;
+}
+
+.stepper-item.completed .step-counter {
+  background-color: #3f095d;
+}
+
+.stepper-item.completed::after {
+  position: absolute;
+  content: "";
+  border-bottom: 4px solid #3f095d;
+  width: 100%;
+  color: white;
+  top: 20px;
+  left: 50%;
+  z-index: 3;
+}
+
+.stepper-item:first-child::before {
+  content: none;
+}
+
+.stepper-item:last-child::after {
+  content: none;
+}
+
  .product-list-filtered{
    display: flex;
    flex-wrap: wrap;

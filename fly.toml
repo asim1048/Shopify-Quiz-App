@@ -1,0 +1,29 @@
+# fly.toml app configuration file generated for quiz-app-basic on 2024-05-21T17:46:49+05:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'quiz-app-basic'
+primary_region = 'ams'
+
+[build]
+
+[http_service]
+  internal_port = 8081
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+
+[env]
+  PORT = "8081"
+  HOST = "https://quiz-app-basic.fly.dev"
+  SHOPIFY_APP_URL = "https://quiz-app-basic.fly.dev"
+  SHOPIFY_API_KEY = "c72a0325616e0295b9210ee2860c197c"
+  SCOPES = "write_products"
