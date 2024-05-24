@@ -33,7 +33,7 @@ export const shopQuizSubmissions = async (req, res) => {
 
 export const sendResultsEmail = async (request, response) => {
     try {
-        const { email, products } = request.body;
+        const {name, email, products } = request.body;
 
         if (!email) {
             return response.status(400).json({
@@ -65,7 +65,7 @@ export const sendResultsEmail = async (request, response) => {
         // Full HTML content
         const htmlContent = `
             <div style="font-family: Arial, sans-serif; color: #333;">
-                <p>Hello,</p>
+                <p>Hello ${name},</p>
                 <p>Thank you for using Vacuum Finder. Here are the results:</p>
                 <div style="max-width:100%; overflow-y:hidden; display: flex; flex-direction: row; flex-wrap: wrap; background-color: white; justify-content: space-between; align-items: center; padding: 10px 25px;  ;">
                 ${productHTML}

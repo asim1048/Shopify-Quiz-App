@@ -13,6 +13,11 @@ let selectedProductIDS = []
 let productss = []
 let qna = []
 
+//only for imperial
+let directMoveToSubmit = false
+let name = "";
+let email = "";
+
 function displayProducts(products) {
     productss = products;
 }
@@ -98,10 +103,10 @@ function toggleOptionSelection(value, questionId, inputFieldValue = null) {
         });
     }
 
-    if (currentQuestion.type === 'SimpleInputFields') {
+    // if (currentQuestion.type === 'SimpleInputFields') {
 
-        qna.push({ title: currentQuestion.title, value: inputFieldValue });
-    }
+    //     qna.push({ title: currentQuestion.title, value: inputFieldValue });
+    // }
 
     console.log("selectedOptions", selectedOptions)
 }
@@ -121,36 +126,113 @@ function displayQuestion(question) {
     questionElement.classList.add('question');
 
     const titleElement = document.createElement('h2');
-    titleElement.textContent = question.type != "SimpleInputFields" ? question.title : "";
+    titleElement.textContent = question.type != "SimpleInputFields" ? question.title : "Get Your Results and Special Offers via Email";
     titleElement.classList.add('questionTitle'); // Add a class for styling
 
     questionElement.appendChild(titleElement);
 
     // Add input field if the question type is input
     if (question.type === 'SimpleInputFields') {
+        // Create a container div
+        const containerDiv = document.createElement('div');
+        containerDiv.style.display = 'flex';
+        containerDiv.style.flexDirection = 'column'; // Arrange children in a column
+        containerDiv.style.gap = '10px'; // Optional: add some space between elements
+        containerDiv.style.alignItems = 'center'; // Optional: add some space between elements
+
+        containerDiv.style.marginTop = '60px'; // Optional: add some space between elements
+
+
+        // Handling first input
         const inputElement = document.createElement('input');
         inputElement.type = 'text';
         inputElement.placeholder = question.title; // Use the title as the placeholder
 
         // Apply CSS styles to the input element
-        inputElement.style.width = '500px'; // Set the width to 100%
+        inputElement.style.width = '500px'; // Set the width
         inputElement.style.padding = '12px'; // Set padding
         inputElement.style.marginTop = '4px'; // Set margin-top
         inputElement.style.border = '1px solid #ccc'; // Add a border
         inputElement.style.borderRadius = '4px'; // Add border-radius for rounded corners
         inputElement.style.fontSize = '16px'; // Set font size
-        inputElement.style.outline = 'none'; // Set font size
+        inputElement.style.outline = 'none'; // Remove outline
         inputElement.style.fontFamily = 'Arial, sans-serif'; // Set font family
         inputElement.style.color = 'black'; // Set text color
         inputElement.style.backgroundColor = '#fff'; // Set background color
 
-        questionElement.appendChild(inputElement);
-
         // Pre-fill input if it was previously entered
-        const existingAnswer = qna.find(item => item.title === question.title);
+        const existingAnswer = qna.find(item => item.title == question.title);
         if (existingAnswer) {
             inputElement.value = existingAnswer.value;
         }
+        // Add an event listener to store the new value in the variable
+        const existingRecord = qna.find(record => record?.id == question._id);
+        if (!existingRecord) {
+            qna.push({ id: question._id, title: question.title, value: null });
+        }
+        inputElement.addEventListener('input', (event) => {
+
+
+            const existingRecord = qna.find(record => record?.id == question._id);
+                // Update the existing record
+                existingRecord.value = event.target.value;
+            
+        });
+
+        // Append the first input to the container div
+        containerDiv.appendChild(inputElement);
+
+        // Handling next input for only imperial homes
+        const inputElement1 = document.createElement('input');
+        inputElement1.type = 'text';
+        inputElement1.placeholder = questionsArray[questionsArray.length - 1].title; // Use the title as the placeholder
+
+        // Apply CSS styles to the input element
+        inputElement1.style.width = '500px'; // Set the width
+        inputElement1.style.padding = '12px'; // Set padding
+        inputElement1.style.marginTop = '4px'; // Set margin-top
+        inputElement1.style.border = '1px solid #ccc'; // Add a border
+        inputElement1.style.borderRadius = '4px'; // Add border-radius for rounded corners
+        inputElement1.style.fontSize = '16px'; // Set font size
+        inputElement1.style.outline = 'none'; // Remove outline
+        inputElement1.style.fontFamily = 'Arial, sans-serif'; // Set font family
+        inputElement1.style.color = 'black'; // Set text color
+        inputElement1.style.backgroundColor = '#fff'; // Set background color
+
+        // Pre-fill input if it was previously entered
+        const existingAnswer1 = qna.find(item => item.title == questionsArray[questionsArray.length - 1].title);
+        if (existingAnswer1) {
+            inputElement1.value = existingAnswer1.value;
+        }
+
+        // Add an event listener to store the new value in the variable
+        const existingRecord1 = qna.find(record => record?.id == questionsArray[questionsArray.length - 1]._id);
+        if (!existingRecord1) {
+            qna.push({ id: questionsArray[questionsArray.length - 1]._id, title: questionsArray[questionsArray.length - 1].title, value: null });
+        }
+        inputElement1.addEventListener('input', (event) => {
+            const existingRecord1 = qna.find(record => record?.id == questionsArray[questionsArray.length - 1]._id);
+
+                // Update the existing record
+                existingRecord1.value = event.target.value;
+           
+        });
+
+        // Append the second input to the container div
+        containerDiv.appendChild(inputElement1);
+
+        // Append the container div to the questionElement
+        questionElement.appendChild(containerDiv);
+
+        // const fieldReText = document.createElement('p');
+        // fieldReText.classList.add('fieldRequireText');
+        // fieldReText.textContent ="Please fill in both Name and Email."
+        // containerDiv.appendChild(fieldReText);
+
+
+
+        directMoveToSubmit = true;
+
     }
 
     // Add options if the question type is SingleSelect or MultiSelect
@@ -186,7 +268,7 @@ function displayQuestion(question) {
             // Add value of option
             const valueElement = document.createElement('p');
             valueElement.textContent = option.value; // Assuming option is an object with 'value' property
-            optionItem.classList.add('optiontitle'); // Add a class for styling
+            valueElement.classList.add('optiontitle'); // Add a class for styling
 
             optionItem.appendChild(valueElement);
 
@@ -253,6 +335,7 @@ function displayStepProgressBar() {
 
 
 function backQuestion() {
+    directMoveToSubmit = false;
     if (currentQuestionIndex > 0) {
         currentQuestionIndex--;
         displayQuestion(questionsArray[currentQuestionIndex]); // Display previous question
@@ -260,7 +343,7 @@ function backQuestion() {
 
         // Handle Back Button visibility
         if (currentQuestionIndex == 0) {
-            const backButton = document.querySelector('.back-button');
+            const backButton = document.querySelector('.previous-button');
             if (backButton) {
                 backButton.style.display = 'none'; // Hide the back button if on the first question
             }
@@ -271,23 +354,62 @@ function backQuestion() {
 function nextQuestion() {
     const currentQuestion = questionsArray[currentQuestionIndex];
 
-
-
-    if (currentQuestion.type === 'SimpleInputFields') {
-        // Get the input field value
-        const inputElement = document.querySelector('input[type="text"]');
-        const inputFieldValue = inputElement.value;
-        if (!inputFieldValue) {
-            alert(`Please enter the ${currentQuestion?.title}`)
-            return;
+    if (directMoveToSubmit) {
+        console.log("qnaqnaqnaqna", qna)
+        if (!qna[qna.length - 2]?.value) {
+            alert(`Please enter the name`)
+        }
+        else if (!qna[qna.length - 1].value) {
+            alert(`Please enter the email*`)
         }
         else {
-            toggleOptionSelection(null, currentQuestion._id, inputFieldValue);
+            console.log("Submit the code ");
+            console.log("shopID", shopID)
+            console.log("QuizID", QuizID)
+
+            fetch(`${location.origin}/apps/proxy-1/answersBaseProductIDS?shop=${Shopify.shop}`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ shopID: shopID, QuizID: QuizID, selectedOptions: selectedOptions, qna: qna })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch questions');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Handle the response data
+                    console.log("Data", data)
+                    selectedProductIDS = data.data;
+                    displayProductsAfterFiltering()
+                })
+                .catch(error => {
+                    console.error('Error fetching questions:', error);
+                });
+
         }
-    } else {
-        // For other question types, simply call toggleOptionSelection without inputFieldValue
-        toggleOptionSelection();
+        return;
     }
+
+
+    // if (currentQuestion.type === 'SimpleInputFields') {
+    //     // Get the input field value
+    //     const inputElement = document.querySelector('input[type="text"]');
+    //     const inputFieldValue = inputElement.value;
+    //     if (!inputFieldValue) {
+    //         alert(`Please enter the ${currentQuestion?.title}`)
+    //         return;
+    //     }
+    //     else {
+    //         toggleOptionSelection(null, currentQuestion._id, inputFieldValue);
+    //     }
+    // } else {
+    //     // For other question types, simply call toggleOptionSelection without inputFieldValue
+    //     toggleOptionSelection();
+    // }
 
 
     if (totalQuestions - 1 > currentQuestionIndex) {
@@ -296,7 +418,7 @@ function nextQuestion() {
         displayStepProgressBar(); // Update step progress bar
         //Handle Back Button
         if (currentQuestionIndex != 0) {
-            const backButton = document.querySelector('.back-button');
+            const backButton = document.querySelector('.previous-button');
             if (backButton) {
                 backButton.style.display = 'flex'; // Hide the quiz title
             }
@@ -345,7 +467,7 @@ function displayProductsAfterFiltering() {
     if (nextButton) {
         nextButton.style.display = 'none'; // Hide the next button
     }
-    const backButton = document.querySelector('.back-button');
+    const backButton = document.querySelector('.previous-button');
     if (backButton) {
         backButton.style.display = 'none'; // Hide the quiz title
     }
@@ -375,11 +497,12 @@ function displayProductsAfterFiltering() {
     resultsContainer.classList.add('results-container');
     resultsContainer.style.textAlign = 'center'; // Center align content
     resultListContainer.appendChild(resultsContainer);
-
-    const resultsHeading = document.createElement('h2');
-    resultsHeading.textContent = 'Results';
-    resultsHeading.style.marginBottom = '10px'; // Add some space below the heading
-    resultsContainer.appendChild(resultsHeading);
+    if (filteredProducts.length > 0) {
+        const resultsHeading = document.createElement('h2');
+        resultsHeading.textContent = 'Hello, Based on your specific answers, Your Results are Below.';
+        resultsContainer.classList.add('resultsTitle');
+        resultsContainer.appendChild(resultsHeading);
+    }
 
     if (filteredProducts.length > 0) {
         // Display filtered products
@@ -387,6 +510,11 @@ function displayProductsAfterFiltering() {
         contentContainer.classList.add('content-container');
         contentContainer.style.display = 'flex';
         contentContainer.style.flexWrap = 'wrap';
+        contentContainer.style.gap = '10px';
+        contentContainer.style.marginBottom = '50px';
+
+
+
         contentContainer.style.justifyContent = 'center'; // Center content horizontally
         resultListContainer.appendChild(contentContainer);
 
@@ -403,18 +531,15 @@ function displayProductsAfterFiltering() {
             titleElement.textContent = product.title;
             titleElement.classList.add('product-title');
 
-            const priceElement = document.createElement('p');
-            priceElement.textContent = product.price;
-            priceElement.classList.add('product-price');
+
 
             const addButton = document.createElement('a');
             addButton.href = product.url;
-            addButton.textContent = 'Add to Cart';
+            addButton.textContent = 'See More';
             addButton.classList.add('add-to-cart-button');
 
             productCard.appendChild(imageElement);
             productCard.appendChild(titleElement);
-            productCard.appendChild(priceElement);
             productCard.appendChild(addButton);
 
             contentContainer.appendChild(productCard);
@@ -425,7 +550,7 @@ function displayProductsAfterFiltering() {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ email: qna[qna?.length - 1]?.value.trim(), products: filteredProducts })
+                body: JSON.stringify({name: qna[qna?.length - 2]?.value.trim(), email: qna[qna?.length - 1]?.value.trim(), products: filteredProducts })
             })
                 .then(response => {
                     if (!response.ok) {

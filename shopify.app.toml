@@ -3,7 +3,7 @@
 client_id = "c72a0325616e0295b9210ee2860c197c"
 name = "auiz-app"
 handle = "auiz-app"
-application_url = "https://appointments-shareware-explanation-sudan.trycloudflare.com"
+application_url = "https://curve-alumni-podcast-yours.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://appointments-shareware-explanation-sudan.trycloudflare.com/auth/callback",
-  "https://appointments-shareware-explanation-sudan.trycloudflare.com/auth/shopify/callback",
-  "https://appointments-shareware-explanation-sudan.trycloudflare.com/api/auth/callback"
+  "https://curve-alumni-podcast-yours.trycloudflare.com/auth/callback",
+  "https://curve-alumni-podcast-yours.trycloudflare.com/auth/shopify/callback",
+  "https://curve-alumni-podcast-yours.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

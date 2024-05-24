@@ -1,14 +1,14 @@
 <div class="app-form">
-<h1 style="display: none;" data-quiz-id="{{ block.settings.quizid }}"></h1>
+    <h1 style="display: none;" data-quiz-id="{{ block.settings.quizid }}"></h1>
     <h2 style="display: none;">{{ shop.id }}</h2> <!-- Hide the shop ID -->
     <h2 class="quiz-title"></h2>
     <div class="stepper-wrapper"></div> <!-- Add the stepper-wrapper here -->
     <div class="question-container"></div>
     <div class="con-button">
-        <button class="back-button" onclick="backQuestion()">Back</button>
+        <button class="previous-button" onclick="backQuestion()">Back</button>
         <button class="next-button" onclick="nextQuestion()">Next</button>
-    <div>
-</div>
+    </div> <!-- Missing closing div tag here -->
+</div> <!-- Closing div for .app-form -->
 
 <div class="result-list">
 </div>
@@ -18,30 +18,22 @@
     <div class="product">
       <img src="{{ product.featured_image | img_url: 'medium' }}" alt="{{ product.title }}">
       <h2>{{ product.title }}</h2>
-            <h3>{{ product.id }}</h3>
-
+      <h3>{{ product.id }}</h3>
       <p>{{ product.price | money }}</p>
       <a href="{{ product.url }}">View Product</a>
     </div>
   {% endfor %}
 </div>
 
-<div class="product-list-filtered" > <!-- Hide the product list initially -->
-  
+<div class="product-list-filtered">
 </div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-       
-
-          const quizIdElement = document.querySelector('[data-quiz-id]');
-    const quizId = quizIdElement ? quizIdElement.getAttribute('data-quiz-id') : null;
-
-
+        const quizIdElement = document.querySelector('[data-quiz-id]');
+        const quizId = quizIdElement ? quizIdElement.getAttribute('data-quiz-id') : null;
 
         fetchQuestions(quizId); // Pass the shop ID to fetchQuestions function
-
-        
 
         // Retrieve product list from hidden div
         const productList = document.querySelector('.product-list');
@@ -61,22 +53,19 @@
     });
 </script>
 
-
-
-
-   {% schema %}
-       {
-          "name": "Add Quiz",
-          "target": "section",
-          "class": "app-dashboard-app",
-          "stylesheet": "questions.css",
-          "javascript": "questions.js",
-          "settings": [
-           {
-              "label": "Enter Quiz ID",
-              "id": "quizid",
-              "type": "text"
-           } 
-          ]
-       }
-       {% endschema %}
+{% schema %}
+{
+    "name": "Add Quiz",
+    "target": "section",
+    "class": "app-dashboard-app",
+    "stylesheet": "questions.css",
+    "javascript": "questions.js",
+    "settings": [
+        {
+            "label": "Enter Quiz ID",
+            "id": "quizid",
+            "type": "text"
+        } 
+    ]
+}
+{% endschema %}
