@@ -11,6 +11,7 @@ let shopID;
 let QuizID;
 let selectedProductIDS = []
 let productss = []
+let products = []
 let qna = []
 
 //only for imperial
@@ -149,7 +150,7 @@ function displayQuestion(question) {
         inputElement.placeholder = question.title; // Use the title as the placeholder
 
         // Apply CSS styles to the input element
-        inputElement.style.width = '500px'; // Set the width
+        inputElement.classList.add('inputField'); // Add a class for styling
         inputElement.style.padding = '12px'; // Set padding
         inputElement.style.marginTop = '4px'; // Set margin-top
         inputElement.style.border = '1px solid #ccc'; // Add a border
@@ -188,7 +189,8 @@ function displayQuestion(question) {
         inputElement1.placeholder = questionsArray[questionsArray.length - 1].title; // Use the title as the placeholder
 
         // Apply CSS styles to the input element
-        inputElement1.style.width = '500px'; // Set the width
+        inputElement1.classList.add('inputField'); // Add a class for styling
+
         inputElement1.style.padding = '12px'; // Set padding
         inputElement1.style.marginTop = '4px'; // Set margin-top
         inputElement1.style.border = '1px solid #ccc'; // Add a border
@@ -384,6 +386,9 @@ function nextQuestion() {
                     // Handle the response data
                     console.log("Data", data)
                     selectedProductIDS = data.data;
+
+                     products = data.products;
+                    console.log("Matching Products,",products)
                     displayProductsAfterFiltering()
                 })
                 .catch(error => {
@@ -446,6 +451,8 @@ function nextQuestion() {
                 // Handle the response data
                 console.log("Data", data)
                 selectedProductIDS = data.data;
+                products = data.products;
+                console.log("Matching Products,",products)
                 displayProductsAfterFiltering()
             })
             .catch(error => {
@@ -460,7 +467,7 @@ function displayProductsAfterFiltering() {
     // Filter products based on selectedProductIDS
     console.log("productssproductss", productss)
 
-    const filteredProducts = productss.filter(product => selectedProductIDS.includes(product.id));
+    //const filteredProducts = productss.filter(product => selectedProductIDS.includes(product.id));
 
     // Show the next button now that questions have been loaded
     const nextButton = document.querySelector('.next-button');
@@ -497,14 +504,13 @@ function displayProductsAfterFiltering() {
     resultsContainer.classList.add('results-container');
     resultsContainer.style.textAlign = 'center'; // Center align content
     resultListContainer.appendChild(resultsContainer);
-    if (filteredProducts.length > 0) {
         const resultsHeading = document.createElement('h2');
         resultsHeading.textContent = 'Hello, Based on your specific answers, Your Results are Below.';
         resultsContainer.classList.add('resultsTitle');
         resultsContainer.appendChild(resultsHeading);
-    }
+    
 
-    if (filteredProducts.length > 0) {
+    if (products.length > 0) {
         // Display filtered products
         const contentContainer = document.createElement('div');
         contentContainer.classList.add('content-container');
@@ -518,12 +524,12 @@ function displayProductsAfterFiltering() {
         contentContainer.style.justifyContent = 'center'; // Center content horizontally
         resultListContainer.appendChild(contentContainer);
 
-        filteredProducts.forEach(product => {
+        products.forEach(product => {
             const productCard = document.createElement('div');
             productCard.classList.add('product-card');
 
             const imageElement = document.createElement('img');
-            imageElement.src = product.imageUrl;
+            imageElement.src = product?.image?.src;
             imageElement.alt = product.title;
             imageElement.classList.add('product-image');
 
@@ -534,7 +540,7 @@ function displayProductsAfterFiltering() {
 
 
             const addButton = document.createElement('a');
-            addButton.href = product.url;
+            addButton.href = location.origin+"/products/"+product.handle;
             addButton.textContent = 'See More';
             addButton.classList.add('add-to-cart-button');
 
@@ -544,13 +550,13 @@ function displayProductsAfterFiltering() {
 
             contentContainer.appendChild(productCard);
         });
-        if (filteredProducts?.length > 0) {
+        if (products?.length > 0) {
             fetch(`${location.origin}/apps/proxy-1/sendResultsEmail?shop=${Shopify.shop}`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({name: qna[qna?.length - 2]?.value.trim(), email: qna[qna?.length - 1]?.value.trim(), products: filteredProducts })
+                body: JSON.stringify({name: qna[qna?.length - 2]?.value.trim(), email: qna[qna?.length - 1]?.value.trim(), products: products, host:location.origin })
             })
                 .then(response => {
                     if (!response.ok) {
@@ -570,7 +576,9 @@ function displayProductsAfterFiltering() {
     } else {
         // Display "No products found" message
         const noResultsMessage = document.createElement('p');
-        noResultsMessage.textContent = 'No products match the selected criteria.';
+        noResultsMessage.textContent = 'No products found.';
+
+        noResultsMessage.style.marginBottom = '15px';
         resultsContainer.appendChild(noResultsMessage);
     }
 }

@@ -81,6 +81,10 @@
   gap: 10px;
 }
 
+.inputField{
+  width: 500px;
+}
+
 .fieldRequireText {
   font-size: 16px;
   color:#363855;
@@ -274,4 +278,29 @@
   text-decoration: none;
 }
 
+@media only screen and (max-width: 600px) {
+  .question-container {
+    height: auto;
+  }
+  .question-container {
+    flex-wrap: wrap;
+  }
+  .options-container {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .option-item {
+    margin-top: 0;
+  }
+  .option-item img {
+    width: 100px;
+    height: 100px;
+  }
+  .optiontitle {
+    margin: 0;
+  }
+  .inputField{
+    width: 90%;
+  }
+}
 

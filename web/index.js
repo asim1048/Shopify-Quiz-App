@@ -13,9 +13,16 @@ import  Connection  from './Database/db.js';
 
 import QuestionPic from './Middleware/Question.js';
 import { host } from "./host/index.js";
+import Question from "./Models/question.js";
+import Quiz from './Models/quiz.js'
+import Quizsubmission from "./Models/quizsubmission.js";
+import Session from "./Models/sessions.js";
+
+
 import { addQuizz,shopQuizes,quizDetail,getShopFirstQuiz,quizanswersBaseProductIDS,deleteQuiz,takeCodeAndDisplay,updateQuiz } from './Controllers/quiz-controller.js';
 import { updateQuestionOptions } from "./Controllers/question-controller.js";
 import { shopQuizSubmissions,sendResultsEmail } from "./Controllers/quizsubmission-controller.js";
+import { addorUpdateSession } from "./Controllers/session-controller.js";
 
 const PORT = parseInt(
   process.env.BACKEND_PORT || process.env.PORT || "3000",
@@ -68,8 +75,121 @@ app.get("/quizzes/info",async(req,res)=>{
 })
 app.post("/quizzes/firstQuiz", getShopFirstQuiz);
 app.post("/quizzes/quizDetail", quizDetail);
-app.post("/quizzes/answersBaseProductIDS", quizanswersBaseProductIDS);
-app.post("/quizzes/answersBaseProductIDS", quizanswersBaseProductIDS);
+app.post("/quizzes/answersBaseProductIDS", async(req,res)=>{
+  try {
+    const { shopID,QuizID,selectedOptions,qna } = req.body;
+    
+    // Create Submission of Quiz
+    const newQuizSubmissiin = new Quizsubmission({
+        shopID: shopID,
+        quizID: QuizID,
+        qna: qna
+    });
+
+    await newQuizSubmissiin.save();
+
+
+    // Fetch the first quiz based on shopID
+    const quiz = await Quiz.findById( QuizID );
+
+    if (!quiz) {
+        // If no quiz found, return appropriate response
+        let ress = {
+            status: false,
+            message: "No quiz found for the shopID",
+        };
+        return res.status(404).send(ress);
+    }
+
+    //-----------Before common-------------------
+  //   const populatedQuestions = await Promise.all(
+  //     quiz.questions.map(async (questionId) => {
+  //         return await Question.findById(questionId);
+  //     })
+  // );
+  // quiz.questions = populatedQuestions;
+
+  // let productIDs = [];
+  // selectedOptions?.forEach(option => {
+  //     const question = populatedQuestions?.find(q => q?._id == option?.questionId);
+  //     if (question && question?.options && question?.options?.length > 0) {
+  //         const selectedOption = question?.options.find(opt => opt?.value == option?.value);
+  //             selectedOption?.Products?.forEach(product => {
+  //                 productIDs.push(product);
+  //             });
+          
+  //     }
+  // });
+  // productIDs = [...new Set(productIDs)];
+
+
+    //-----------Adding common-------------------
+    const populatedQuestions = await Promise.all(
+      quiz.questions.map(async (questionId) => {
+          return await Question.findById(questionId);
+      })
+  );
+  quiz.questions = populatedQuestions;
+  
+  let productArrays = [];
+  selectedOptions?.forEach(option => {
+      const question = populatedQuestions?.find(q => q?._id == option?.questionId);
+      if (question && question?.options && question?.options?.length > 0) {
+          const selectedOption = question?.options.find(opt => opt?.value == option?.value);
+          if (selectedOption && selectedOption?.Products) {
+              productArrays.push(selectedOption.Products);
+          }
+      }
+  });
+  
+  // Function to find the intersection of multiple arrays
+  function getIntersection(arrays) {
+      return arrays.reduce((acc, array) => acc.filter(value => array.includes(value)), arrays[0] || []);
+  }
+  
+  const productIDs = getIntersection(productArrays);
+  
+  console.log(productIDs);
+
+    //finding session
+    let shopSession = await Session.findOne({ shopID: shopID });
+    
+    if(productIDs?.length>0){
+    let productsData=await shopify.api.rest.Product.all({
+      session: shopSession?.session,
+      ids: productIDs.join(',')
+    })
+    
+
+
+    let ress = {
+        status: true,
+        message: "Quiz fetched successfully",
+        data: productIDs,
+        products:productsData?.data
+    };
+    return res.status(200).send(ress);
+    }
+    else {
+      let ress = {
+        status: true,
+        message: "Quiz fetched successfully",
+        data: productIDs,
+        products:[]
+    };
+    return res.status(200).send(ress);
+    }
+} catch (error) {
+    console.log(error)
+    let ress = {
+        status: false,
+        message: "Something went wrong in the backend",
+        error: error,
+    };
+    return res.status(500).send(ress);
+}
+});
+// app.post("/quizzes/answersBaseProductIDS", quizanswersBaseProductIDS);
 app.post("/quizzes/sendResultsEmail", sendResultsEmail);
 
 
@@ -80,6 +200,7 @@ app.post('/api/quiz/getShopFirstQuiz', getShopFirstQuiz);
 app.post('/api/quiz/updateQuestionOptions', updateQuestionOptions);
 app.post('/api/quiz/deleteQuiz', deleteQuiz);
 app.post('/api/quiz/shopQuizSubmissions', shopQuizSubmissions);
+app.post('/api/quiz/addorUpdateSession', addorUpdateSession);
 
 app.get('/api/quiz/getHost',async(req,res)=>{
   let ress = {
@@ -97,7 +218,7 @@ app.get("/api/store/info", async(_req,res)=>{
     session: res.locals.shopify.session,
   })
   
-  res.status(200).send(storeInfo);
+  res.status(200).send({storeInfo,session:res.locals.shopify.session});
 })
 
 app.get("/api/products/count", async (_req, res) => {

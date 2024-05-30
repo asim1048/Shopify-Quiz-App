@@ -74,7 +74,7 @@ function MyApp() {
         display: "flex",
         flexDirection: "column",
         backgroundColor: "white",
-        height: "100vh",
+        minHeight: "100vh",
         color: "white",
         padding: "20px",
       }}

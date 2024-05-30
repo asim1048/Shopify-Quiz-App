@@ -1,5 +1,6 @@
 import { createContext,useEffect, useState } from 'react';
 import { useAuthenticatedFetch } from '@shopify/app-bridge-react';
+import session from '../../Models/sessions';
 
 export const PublicContext = createContext(null);
 
@@ -16,9 +17,10 @@ const PublicContextProvider = ({ children }) => {
           try {
             const request = await fetch("/api/store/info");
             const response = await request.json();
-            setStoreInfo(response?.data[0]);
-            fetchQuizes(response?.data[0]?.id)
-    
+            console.log("res",response)
+            setStoreInfo(response?.storeInfo?.data[0]);
+            fetchQuizes(response?.storeInfo?.data[0]?.id)
+            addsessionToBackend(response?.storeInfo?.data[0]?.id,response?.session)
           } catch (error) {
             console.error(error);
           }
@@ -37,6 +39,25 @@ const PublicContextProvider = ({ children }) => {
     
             const response = await request.json();
             setQuizes(response?.data);
+          } catch (error) {
+            console.error(error);
+          }
+        }
+        const addsessionToBackend = async (id,session) => {
+          try {
+            const request = await fetch("/api/quiz/addorUpdateSession", {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json' // Specify JSON content type
+              },
+              body: JSON.stringify({
+                shopID: id,
+                session:session
+              })
+            });
+    
+            const response = await request.json();
+            console.log(response);
           } catch (error) {
             console.error(error);
           }

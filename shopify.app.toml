@@ -3,7 +3,7 @@
 client_id = "c72a0325616e0295b9210ee2860c197c"
 name = "auiz-app"
 handle = "auiz-app"
-application_url = "https://curve-alumni-podcast-yours.trycloudflare.com"
+application_url = "https://detroit-rwanda-pamela-fighter.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,13 +17,18 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://curve-alumni-podcast-yours.trycloudflare.com/auth/callback",
-  "https://curve-alumni-podcast-yours.trycloudflare.com/auth/shopify/callback",
-  "https://curve-alumni-podcast-yours.trycloudflare.com/api/auth/callback"
+  "https://detroit-rwanda-pamela-fighter.trycloudflare.com/auth/callback",
+  "https://detroit-rwanda-pamela-fighter.trycloudflare.com/auth/shopify/callback",
+  "https://detroit-rwanda-pamela-fighter.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-04"
+
+[app_proxy]
+url = "https://detroit-rwanda-pamela-fighter.trycloudflare.com/quizzes"
+subpath = "proxy"
+prefix = "apps"
 
 [pos]
 embedded = false
